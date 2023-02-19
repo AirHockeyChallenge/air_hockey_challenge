@@ -1,0 +1,6 @@
+# Install torch without GPU support. If you need GPU support for training I suggest using a local installation with GPU
+# support for training and the docker image for evaluation because the nvidia Packages add 3.5GB to the docker image.
+
+
+PyYAML==6.0
+mushroom-rl==1.9.0
