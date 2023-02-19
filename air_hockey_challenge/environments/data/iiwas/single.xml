@@ -1,0 +1,32 @@
+<mujoco model="AirHockeySingle">
+
+    <include file="iiwa1.xml"/>
+    <include file="../table.xml"/>
+
+    <contact>
+        <exclude body1="table_surface" body2="iiwa_1/base"/>
+        <exclude body1="table_surface" body2="iiwa_1/link_1"/>
+        <exclude body1="table_surface" body2="iiwa_1/link_2"/>
+        <exclude body1="table_surface" body2="iiwa_1/link_3"/>
+        <exclude body1="table_surface" body2="iiwa_1/link_4"/>
+        <exclude body1="table_surface" body2="iiwa_1/link_5"/>
+        <exclude body1="table_surface" body2="iiwa_1/link_6"/>
+        <exclude body1="table_surface" body2="iiwa_1/link_7"/>
+        <exclude body1="table_surface" body2="iiwa_1/striker_joint_link"/>
+        <exclude body1="table_surface" body2="iiwa_1/striker_mallet"/>
+
+        <exclude body1="rim" body2="iiwa_1/base"/>
+        <exclude body1="rim" body2="iiwa_1/link_1"/>
+        <exclude body1="rim" body2="iiwa_1/link_2"/>
+        <exclude body1="rim" body2="iiwa_1/link_3"/>
+        <exclude body1="rim" body2="iiwa_1/link_4"/>
+        <exclude body1="rim" body2="iiwa_1/link_5"/>
+        <exclude body1="rim" body2="iiwa_1/link_6"/>
+        <exclude body1="rim" body2="iiwa_1/link_7"/>
+        <exclude body1="rim" body2="iiwa_1/striker_joint_link"/>
+        <exclude body1="rim" body2="iiwa_1/striker_mallet"/>
+
+        <exclude body1="world" body2="iiwa_1/striker_mallet"/>
+    </contact>
+
+</mujoco>

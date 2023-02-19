@@ -1,0 +1,90 @@
+<mujoco model="table">
+
+    <option timestep="0.001" cone="elliptic" impratio="1"/>
+
+    <asset>
+        <material name="grey" specular="0.5" shininess="0.25" rgba="0.8 0.8 0.8 1"/>
+        <material name="white" specular="0.5" shininess="0.25" rgba="1.0 1.0 1.0 1"/>
+        <material name="red" specular="0.5" shininess="0.25" rgba="1.0 0.0 0.0 1"/>
+        <material name="blue" specular="0.5" shininess="0.25" rgba="0.0 0.0 1.0 1"/>
+        <material name="transparent" specular="0.5" shininess="0.25" rgba="0.0 0.0 1.0 0"/>
+
+        <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512"
+            height="3072"/>
+        <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4"
+            rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+        <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5"
+            reflectance="0.2"/>
+    </asset>
+
+    <default>
+        <geom condim="4" solref="0.02 0.3"/>
+        <default class="rim">
+            <geom type="box" material="grey" condim="6" friction="10000 0.0 0.0" priority="1"
+                  solref="-2000000 -250" solimp="0.99 0.999 0.001 0.5 2"/>
+        </default>
+    </default>
+
+    <worldbody>
+        <body name="table">
+            <body name="table_surface">
+                <geom name="surface" type="box" material="white" size="1.064 0.609 0.0505" pos="0 0 -0.0505"
+                      condim="4" friction="0.08 0.08 0.0" priority="1"
+                      solref="0.0125 0.5" solimp="0.9 0.999 0.001 0.5 2"/>
+            </body>
+            <body name="rim">
+                <geom name="rim_home_l" class="rim" size="0.045 0.197 0.005" pos="-1.019 0.322 0.005"/>
+                <geom name="rim_home_r" class="rim" size="0.045 0.197 0.005" pos="-1.019 -0.322 0.005"/>
+                <geom name="rim_home_top" class="rim" size="0.045 0.519 0.01" pos="-1.019 0 0.02"/>
+
+                <geom name="rim_left" class="rim" size="1.064 0.045 0.015" pos="0 0.564 0.015"/>
+                <geom name="rim_right" class="rim" size="1.064 0.045 0.015" pos="0 -0.564 0.015"/>
+
+                <geom name="rim_away_l" class="rim" size="0.045 0.197 0.005" pos="1.019 0.322 0.005"/>
+                <geom name="rim_away_r" class="rim" size="0.045 0.197 0.005" pos="1.019 -0.322 0.005"/>
+                <geom name="rim_away_top" class="rim" size="0.045 0.519 0.01" pos="1.019 0 0.02"/>
+            </body>
+        </body>
+
+        <body name="base" pos="0 0 0">
+            <joint name="puck_x" type="slide" axis="1 0 0" damping="0.005" limited="false"/>
+            <joint name="puck_y" type="slide" axis="0 1 0" damping="0.005" limited="false"/>
+            <joint name="puck_yaw" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
+            <body name="puck">
+                <geom pos="0 0 0" name="puck" type="cylinder" material="red" size="0.03165 0.003"
+                      condim="4" priority="0"/>
+                <geom pos="0.02 0 0" type="cylinder" material="blue" size="0.01 0.0031"
+                      condim="4" contype="0" conaffinity="0"/>
+                <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
+            </body>
+        </body>
+    </worldbody>
+
+    <contact>
+        <exclude body1="puck" body2="table_surface"/>
+    </contact>
+
+    <worldbody>
+        <light pos="0 0 3" dir="0 0 -1" directional="true"/>
+        <geom pos="0 0 -0.1" name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    </worldbody>
+
+    <worldbody>
+        <body name="puck_record" pos="0 0 0">
+            <joint name="puck_record_x" type="slide" axis="1 0 0" damping="0.005" limited="false"/>
+            <joint name="puck_record_y" type="slide" axis="0 1 0" damping="0.005" limited="false"/>
+            <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
+            <body>
+                <joint name="puck_record_yaw_vis" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
+                <geom pos="0 0 0" name="puck_record" type="ellipsoid" size="0.03165 0.03165 0.004" material="transparent"
+                  condim="4" friction="0.1 0 0" contype="0" conaffinity="0"/>
+            </body>
+            <body>
+                <joint name="puck_record_yaw" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
+                <geom pos="0.016 0 0" zaxis="1 0 0" name="puck_record_ori" type="cylinder" material="transparent" size="0.0045 0.016 "
+                      condim="4" friction="0.1 0 0" contype="0" conaffinity="0"/>
+                <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
+            </body>
+        </body>
+    </worldbody>
+</mujoco>

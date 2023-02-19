@@ -1,0 +1,24 @@
+<mujoco model="AirHockeySingle">
+
+
+    <include file="planar_robot_1.xml"/>
+
+    <include file="../table.xml"/>
+
+
+    <contact>
+        <exclude body1="planar_robot_1/body_ee" body2="table_surface"/>
+        <exclude body1="planar_robot_1/body_hand" body2="table_surface"/>
+        <exclude body1="planar_robot_1/body_3" body2="table_surface"/>
+        <exclude body1="planar_robot_1/body_2" body2="table_surface"/>
+        <exclude body1="planar_robot_1/body_1" body2="table_surface"/>
+        <exclude body1="planar_robot_1/base" body2="table_surface"/>
+        <exclude body1="planar_robot_1/body_ee" body2="rim"/>
+        <exclude body1="planar_robot_1/body_hand" body2="rim"/>
+        <exclude body1="planar_robot_1/body_3" body2="rim"/>
+        <exclude body1="planar_robot_1/body_2" body2="rim"/>
+        <exclude body1="planar_robot_1/body_1" body2="rim"/>
+        <exclude body1="planar_robot_1/base" body2="rim"/>
+    </contact>
+
+</mujoco>
