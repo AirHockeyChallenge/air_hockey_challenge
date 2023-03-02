@@ -39,6 +39,16 @@ We provide a script to download the dataset once the evaluation is done. You can
 
     python scripts/download_dataset.py
 
+
+Replay Dataset
+--------------
+
+We also provide a util to replay your dataset in ``utils/replay_dataset.py``.
+You can reply your dataset following example in ``examples/replay_dataset/replay_dataset.py``.
+
+.. literalinclude:: ../../examples/replay_dataset/replay_dataset.py
+
+
 Metric
 ------
 
