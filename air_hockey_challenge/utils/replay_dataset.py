@@ -2,7 +2,18 @@ import mujoco
 import numpy as np
 from air_hockey_challenge.framework import AirHockeyChallengeWrapper
 
+
 def replay_dataset(env_name, dataset_path):
+    """Replay the Dataset
+
+    Args
+    ----
+    env_name: str
+        The name of the environment
+    dataset_path: str
+        The path of the dataset to replay
+
+    """
     dataset = np.load(dataset_path, allow_pickle=True)
 
     # Do not change action_type, it does not have to match the recorded dataset
@@ -44,4 +55,4 @@ def replay_dataset(env_name, dataset_path):
 
 
 if __name__ == "__main__":
-    replay_dataset("3dof-hit", "../../logs/eval-2023-02-08_10-41-11/3dof-hit/dataset.pkl")
+    replay_dataset("3dof-hit", "../../logs/eval-2023-02-08_10-41-11/3dof-hit/dataset-3dof-hit.pkl")
