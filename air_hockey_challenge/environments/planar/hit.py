@@ -59,7 +59,7 @@ class AirHockeyHit(AirHockeySingle):
 
 
 if __name__ == '__main__':
-    env = AirHockeyHit(moving_init=False)
+    env = AirHockeyHit(moving_init=True)
 
     env.reset()
     env.render()

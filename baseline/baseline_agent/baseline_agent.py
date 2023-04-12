@@ -92,13 +92,16 @@ def main():
     from air_hockey_challenge.framework.agent_base import DoubleAgentsWrapper
     np.random.seed(0)
 
-    env = AirHockeyChallengeWrapper(env="3dof-hit-opponent", action_type="position-velocity",
+
+    # env = AirHockeyChallengeWrapper(env="3dof-hit-opponent", action_type="position-velocity",
+    #                                 interpolation_order=3, debug=False)
+    env = AirHockeyChallengeWrapper(env="3dof-hit", action_type="position-velocity",
                                     interpolation_order=3, debug=False)
 
-    agents = BaselineAgent(env.env_info, agent_id=1, only_tactic="hit")
-    # agent2 = BaselineAgent(env.env_info, agent_id=1)
+    agent1 = BaselineAgent(env.env_info, agent_id=1, only_tactic="hit")
+    agent2 = BaselineAgent(env.env_info, agent_id=1, only_tactic="hit")
 
-    # agents = DoubleAgentsWrapper(env.env_info, agent1, agent2)
+    agents = DoubleAgentsWrapper(env.env_info, agent1, agent2)
 
     obs = env.reset()
     agents.episode_start()

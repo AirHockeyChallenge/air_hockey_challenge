@@ -4,6 +4,10 @@ import mujoco
 from air_hockey_challenge.environments.planar import AirHockeyBase
 
 
+
+#define our own class
+#class AirHockeyDouble(AirHockeyBase)
+
 class AirHockeySingle(AirHockeyBase):
     """
     Base class for single agent air hockey tasks.
