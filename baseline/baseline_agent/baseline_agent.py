@@ -66,7 +66,7 @@ class BaselineAgent(AgentBase):
 
     def draw_action(self, obs):
         self.state.update_observation(self.get_joint_pos(obs), self.get_joint_vel(obs), self.get_puck_pos(obs))
-
+        
         while True:
             self.tactics_processor[self.state.tactic_current.value].update_tactic()
             activeTactic = self.tactics_processor[self.state.tactic_current.value]

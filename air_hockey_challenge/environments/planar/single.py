@@ -77,7 +77,7 @@ class AirHockeySingle(AirHockeyBase):
             self.q_vel_prev[i] = self._data.joint("planar_robot_1/joint_" + str(i + 1)).qvel
 
         mujoco.mj_fwdPosition(self._model, self._data)
-        super().setup(state)
+        super().setup()
 
     def _create_observation(self, obs):
         # Filter the joint velocity
