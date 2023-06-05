@@ -1,3 +1,3 @@
 from .base import AirHockeyBase
-from .hit import AirHockeyHit
 from .defend import AirHockeyDefend
+from .hit import AirHockeyHit

@@ -1,34 +1,33 @@
 import mujoco
 import numpy as np
+
 from air_hockey_challenge.framework import AirHockeyChallengeWrapper
 
 
 def replay_dataset(env_name, dataset_path):
-    """Replay the Dataset
-
-    Args
-    ----
-    env_name: str
-        The name of the environment
-    dataset_path: str
-        The path of the dataset to replay
-
-    """
     dataset = np.load(dataset_path, allow_pickle=True)
 
-    # Do not change action_type, it does not have to match the recorded dataset
-    mdp = AirHockeyChallengeWrapper(env_name, action_type="acceleration")
-    if mdp.base_env.n_agents == 1:
+    mdp = AirHockeyChallengeWrapper(env_name)
+    if env_name != "7dof-hit":
         mdp.reset()
+
+        mujoco_idx = mdp.base_env.obs_helper.joint_mujoco_idx.copy()
+        obs_idx = mdp.base_env.obs_helper.joint_pos_idx.copy()
+
+        if env_name is "tournament":
+            # Remove the second puck obs idx so the correctly oriented one is copied
+            del mujoco_idx[10:13]
+            del obs_idx[10:13]
+
         for step in dataset:
-            mdp.base_env._data.qpos[mdp.base_env.obs_helper.joint_mujoco_idx] = step[0][mdp.base_env.obs_helper.joint_pos_idx]
+            mdp.base_env._data.qpos[mujoco_idx] = step[0][obs_idx]
             # Adjust puck back to table frame
             mdp.base_env._data.joint("puck_x").qpos -= 1.51
             mujoco.mj_fwdPosition(mdp.base_env._model, mdp.base_env._data)
             mdp.render()
 
     else:
-        # Assume it's hit opponent env, replay obs of agent and puck, simulate opponent because we don't have
+        # replay obs of agent and puck, simulate opponent because we don't have
         # his movement in the observations
         mdp.reset()
 
@@ -44,7 +43,7 @@ def replay_dataset(env_name, dataset_path):
             action = np.zeros(mdp.env_info['robot']["n_joints"])
             mdp.step(action)
             mdp.base_env._data.qpos[mujoco_idx] = step[0][pos_idx]
-            mdp.base_env._data.joint("puck_x").qpos -= 1.51
+            # mdp.base_env._data.joint("puck_x").qpos -= 1.51
 
             mujoco.mj_fwdPosition(mdp.base_env._model, mdp.base_env._data)
 
@@ -55,4 +54,4 @@ def replay_dataset(env_name, dataset_path):
 
 
 if __name__ == "__main__":
-    replay_dataset("3dof-hit", "../../logs/eval-2023-02-08_10-41-11/3dof-hit/dataset-3dof-hit.pkl")
+    replay_dataset("tournament", "../../logs/eval-2023-05-15_16-09-01/Game_0/Home/dataset.pkl")

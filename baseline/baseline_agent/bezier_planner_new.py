@@ -1,5 +1,6 @@
-import numpy as np
 import matplotlib
+import numpy as np
+
 matplotlib.use('tkAgg')
 import matplotlib.pyplot as plt
 
@@ -156,7 +157,7 @@ class BezierPlanner:
     def update_bezier_curve(self, t_start, p_stop, v_stop, t_final):
         z, dz_dt, _ = self.get_time_bezier_root(t_start)
         dp_dz = 3 * (1 - z) ** 2 * (self.p1 - self.p0) + 6 * (1 - z) * z * (self.p2 - self.p1) + 3 * z ** 2 * (
-                    self.p3 - self.p2)
+                self.p3 - self.p2)
 
         h_23 = np.inf
         for b in self.boundary:
@@ -189,7 +190,10 @@ class BezierPlanner:
         self.p3 = p3_new
 
         self.t_final = self._round_time(t_final)
-        dz_start = np.linalg.norm(dp_dz * dz_dt) / np.linalg.norm(self.p1 - self.p0) / 3
+        if np.linalg.norm(self.p1 - self.p0) > 1e-3:
+            dz_start = np.linalg.norm(dp_dz * dz_dt) / np.linalg.norm(self.p1 - self.p0) / 3
+        else:
+            dz_start = 0
         if h_23 == 0:
             dz_stop = 0
         else:
@@ -348,10 +352,6 @@ if __name__ == '__main__':
         axes_time[0].scatter(bezier_planner.z2[0] + t_offset, bezier_planner.z2[1])
         axes_time[0].scatter(bezier_planner.z3[0] + t_offset, bezier_planner.z3[1])
 
-
-
-
-
         t_offset = 0.2
         pos_stop_new = np.array([0.5, 0.3])
         vel_stop_new = np.array([2.0, 0.0])
@@ -383,9 +383,6 @@ if __name__ == '__main__':
         axes_time[0].scatter(bezier_planner.z1[0] + 2 * t_offset, bezier_planner.z1[1])
         axes_time[0].scatter(bezier_planner.z2[0] + 2 * t_offset, bezier_planner.z2[1])
         axes_time[0].scatter(bezier_planner.z3[0] + 2 * t_offset, bezier_planner.z3[1])
-
-
-
 
         t_offset = 0.2
         pos_stop_new = np.array([0.5, 0.3])

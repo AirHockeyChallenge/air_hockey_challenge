@@ -1,7 +1,9 @@
-import time
 import threading
+import time
+
 import numpy as np
 from scipy.interpolate import CubicSpline
+
 from air_hockey_challenge.framework.agent_base import AgentBase
 from baseline.baseline_agent import BezierPlanner, TrajectoryOptimizer, PuckTracker
 

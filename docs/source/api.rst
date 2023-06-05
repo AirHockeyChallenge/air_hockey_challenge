@@ -94,11 +94,4 @@ Transformation
 .. automodule:: air_hockey_challenge.utils.transformations
     :members:
 
-Replay Dataset
-~~~~~~~~~~~~~~
-
-``air_hockey_challenge.utils.replay_dataset``
-
-.. automodule:: air_hockey_challenge.utils.replay_dataset
-    :members:
 

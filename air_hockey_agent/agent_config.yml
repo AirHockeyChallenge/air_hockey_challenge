@@ -1,15 +1,17 @@
 # This is the default config file which is loaded by run.py. It contains all the parameters that can be specified for
 # the evaluation of an Agent. The parameters are explained in more detail in air_hockey_challenge/framework/evaluate_agent.py
 
+# Environment Parameters
+interpolation_order: 3
 # Execution Parameters
 render: False
 quiet: False
 n_episodes: 1000 # How many episodes one environment will run
 n_cores: 4 # How many cores will be used, -1 takes all cores and 1 will not parallelize the program
-env: ["3dof"] # What environments are evaluated can specify multiple environments or use the shortcuts 3dof, 7dof and all
+env: [ "7dof" ] # What environments are evaluated can specify multiple environments or use the shortcuts 3dof, 7dof and all
 log_dir: "logs"
 seed: null # Specify a seed, set null for no custom seed
-generate_score: "phase-1" # Generate the score for the leaderboard ranking, set null for no score
+generate_score: "phase-2" # Generate the score for the leaderboard ranking, set null for no score
 
 # Agent Parameters
 # You can specify your own parameters here, they will be passed to the init of your Agent

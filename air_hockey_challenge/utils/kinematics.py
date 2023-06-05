@@ -1,5 +1,5 @@
-import numpy as np
 import mujoco
+import numpy as np
 
 
 def forward_kinematics(mj_model, mj_data, q, link="ee"):
@@ -246,4 +246,3 @@ def _mujoco_clik(desired_pos, desired_quat, initial_q, name, model, data, lower_
     q_cur = data.qpos.copy()
 
     return success, q_cur
-

@@ -1,4 +1,3 @@
-
 from air_hockey_challenge.framework.agent_base import AgentBase
 from baseline.baseline_agent.tactics import *
 
@@ -26,12 +25,12 @@ class BaselineAgent(AgentBase):
         super(BaselineAgent, self).__init__(env_info, agent_id, **kwargs)
 
         if self.env_info['robot']['n_joints'] == 3:
-            joint_anchor_pos = np.array([-1.15570723,  1.30024401,  1.44280414])
+            joint_anchor_pos = np.array([-1.15570723, 1.30024401, 1.44280414])
             x_init = np.array([0.65, 0., 0.1])
             x_home = np.array([0.65, 0., 0.1])
             max_hit_velocity = 1.0
         else:
-            joint_anchor_pos = np.array([0., -0.1961, 0., -1.8436, 0.,  0.9704,  0.])
+            joint_anchor_pos = np.array([0., -0.1961, 0., -1.8436, 0., 0.9704, 0.])
             x_init = np.array([0.65, 0., self.env_info['robot']['ee_desired_height'] + 0.2])
             x_home = np.array([0.65, 0., self.env_info['robot']['ee_desired_height']])
             max_hit_velocity = 1.2
@@ -55,7 +54,8 @@ class BaselineAgent(AgentBase):
         self.traj_generator = TrajectoryGenerator(self.env_info, self.agent_params, self.state)
 
         self.tactics_processor = [Init(self.env_info, self.agent_params, self.state, self.traj_generator),
-                                  Ready(self.env_info, self.agent_params, self.state, self.traj_generator, only_tactic=only_tactic),
+                                  Ready(self.env_info, self.agent_params, self.state, self.traj_generator,
+                                        only_tactic=only_tactic),
                                   Prepare(self.env_info, self.agent_params, self.state, self.traj_generator),
                                   Defend(self.env_info, self.agent_params, self.state, self.traj_generator),
                                   Repel(self.env_info, self.agent_params, self.state, self.traj_generator),
@@ -89,7 +89,6 @@ class BaselineAgent(AgentBase):
 def main():
     import time
     from air_hockey_challenge.framework.air_hockey_challenge_wrapper import AirHockeyChallengeWrapper
-    from air_hockey_challenge.framework.agent_base import DoubleAgentsWrapper
     np.random.seed(0)
 
     env = AirHockeyChallengeWrapper(env="3dof-hit-opponent", action_type="position-velocity",

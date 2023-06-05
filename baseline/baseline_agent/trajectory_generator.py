@@ -1,9 +1,10 @@
 import numpy as np
 from scipy.interpolate import CubicSpline
-from baseline.baseline_agent.system_state import SystemState
+
 from baseline.baseline_agent.bezier_planner_new import BezierPlanner
 from baseline.baseline_agent.cubic_linear_planner import CubicLinearPlanner
 from baseline.baseline_agent.optimizer import TrajectoryOptimizer
+from baseline.baseline_agent.system_state import SystemState
 
 
 class TrajectoryGenerator:

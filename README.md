@@ -1,4 +1,4 @@
-# Air Hockey Challenge 2022 
+# Air Hockey Challenge 2023
 
 [ [Website] ](https://air-hockey-challenge.robot-learning.net/) [ [Documentation] ](https://air-hockey-challenges-docs.readthedocs.io/en/latest/)  [ [Discussion] ](https://github.com/AirHockeyChallenge/air_hockey_challenge/discussions)
 
@@ -10,7 +10,7 @@ Please see the [documentation](https://air-hockey-challenges-docs.readthedocs.io
 
 ## Support
 
-Please create github issues for technical questions and send email to 
+Please create github issues for technical questions and send email to
 [air-hockey-challenge@robot-learning.net](mailto:air-hockey-challenge@robot-learning.net) for organization questions
 
 ## Authors and acknowledgment

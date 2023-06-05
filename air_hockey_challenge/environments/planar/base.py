@@ -1,13 +1,12 @@
 import os
-import mujoco
 
+import mujoco
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
+from air_hockey_challenge.environments.data.planar import __file__ as env_path
 from mushroom_rl.environments.mujoco import MuJoCo, ObservationType
 from mushroom_rl.utils.spaces import Box
-
-from air_hockey_challenge.environments.data.planar import __file__ as env_path
 
 
 class AirHockeyBase(MuJoCo):
@@ -104,8 +103,8 @@ class AirHockeyBase(MuJoCo):
             "joint_vel_limit": np.array([[-np.pi / 2, -np.pi / 2, -np.pi * 2 / 3],
                                          [np.pi / 2, np.pi / 2, np.pi * 2 / 3]]),
 
-            "joint_acc_limit": np.array([[-2 * np.pi, -2 * np.pi, -2 * 4/3 * np.pi],
-                                         [2 * np.pi, 2 * np.pi, 2 * 4/3 * np.pi]]),
+            "joint_acc_limit": np.array([[-2 * np.pi, -2 * np.pi, -2 * 4 / 3 * np.pi],
+                                         [2 * np.pi, 2 * np.pi, 2 * 4 / 3 * np.pi]]),
             "base_frame": [],
             "control_frequency": 50,
         }
@@ -132,7 +131,8 @@ class AirHockeyBase(MuJoCo):
 
         # Add env_info that requires mujoco models
         self.env_info['dt'] = self.dt
-        self.env_info["robot"]["joint_pos_limit"] = np.array([self._model.joint(f"planar_robot_1/joint_{i + 1}").range for i in range(3)]).T
+        self.env_info["robot"]["joint_pos_limit"] = np.array(
+            [self._model.joint(f"planar_robot_1/joint_{i + 1}").range for i in range(3)]).T
         self.env_info["robot"]["robot_model"] = robot_model
         self.env_info["robot"]["robot_data"] = robot_data
         self.env_info["rl_info"] = self.info
@@ -159,9 +159,9 @@ class AirHockeyBase(MuJoCo):
                                        for i in range(self.env_info['robot']['n_joints'])]),
                             *self.env_info['robot']['joint_vel_limit'][0]])
         obs_high = np.array([3.02, 1, np.pi, 20., 20., 100,
-                            *np.array([self._model.joint(f"planar_robot_1/joint_{i + 1}").range[1]
-                                       for i in range(self.env_info['robot']['n_joints'])]),
-                            *self.env_info['robot']['joint_vel_limit'][1]])
+                             *np.array([self._model.joint(f"planar_robot_1/joint_{i + 1}").range[1]
+                                        for i in range(self.env_info['robot']['n_joints'])]),
+                             *self.env_info['robot']['joint_vel_limit'][1]])
         if self.n_agents == 2:
             obs_low = np.concatenate([obs_low, [1.5, -1.5, -1.5]])
             obs_high = np.concatenate([obs_high, [4.5, 1.5, 1.5]])

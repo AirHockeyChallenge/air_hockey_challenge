@@ -10,11 +10,11 @@
         <material name="transparent" specular="0.5" shininess="0.25" rgba="0.0 0.0 1.0 0"/>
 
         <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512"
-            height="3072"/>
+                 height="3072"/>
         <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4"
-            rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+                 rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
         <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5"
-            reflectance="0.2"/>
+                  reflectance="0.2"/>
     </asset>
 
     <default>
@@ -76,12 +76,14 @@
             <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
             <body>
                 <joint name="puck_record_yaw_vis" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
-                <geom pos="0 0 0" name="puck_record" type="ellipsoid" size="0.03165 0.03165 0.004" material="transparent"
-                  condim="4" friction="0.1 0 0" contype="0" conaffinity="0"/>
+                <geom pos="0 0 0" name="puck_record" type="ellipsoid" size="0.03165 0.03165 0.004"
+                      material="transparent"
+                      condim="4" friction="0.1 0 0" contype="0" conaffinity="0"/>
             </body>
             <body>
                 <joint name="puck_record_yaw" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
-                <geom pos="0.016 0 0" zaxis="1 0 0" name="puck_record_ori" type="cylinder" material="transparent" size="0.0045 0.016 "
+                <geom pos="0.016 0 0" zaxis="1 0 0" name="puck_record_ori" type="cylinder" material="transparent"
+                      size="0.0045 0.016 "
                       condim="4" friction="0.1 0 0" contype="0" conaffinity="0"/>
                 <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
             </body>

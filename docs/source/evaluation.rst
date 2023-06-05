@@ -40,14 +40,40 @@ We provide a script to download the dataset once the evaluation is done. You can
     python scripts/download_dataset.py
 
 
-Replay Dataset
---------------
+Dataset
+-------
 
-We also provide a util to replay your dataset in ``utils/replay_dataset.py``.
-You can reply your dataset following example in ``examples/replay_dataset/replay_dataset.py``.
+The dataset is organized as follows:
 
-.. literalinclude:: ../../examples/replay_dataset/replay_dataset.py
+::
 
+    dataset_path
+    ├── envs
+    │   ├── computation_time.npy
+    │   ├── ee_constr.npy
+    │   ├── joint_pos_constr.npy
+    │   ├── joint_vel_constr.npy
+    │   ├── dataset.pkl
+    │   └── violations.json
+    ├── 3dof-defend
+    └── results.json
+
+You can load the files as
+
+.. code-block:: python
+
+    dataset = np.load(path_to_the_file, allow_pickle=True)
+
+The dataset in ``dataset.pkl`` stores a list of tuples at each step. The length of the list is the total number of
+steps of the evaluation. Each item in the list contains a tuple:
+
+.. code-block:: python
+
+    (state[array], action[array], reward[float], next_state[array], absorbing[bool], last[bool])
+
+The other ``.npy`` files contain the specific info of the evaluation at each step.
+
+To replay the dataset, you can call the function in the ``air_hockey_challenge/utils/replay_dataset.py``
 
 Metric
 ------
@@ -104,7 +130,10 @@ The following are the constraints considered in the challenge:
     * Penalty Points 0.5:
         0.1s >= maximum computation time > 0.02s
 
-#. Jerk (1):
+#. Jerk (0):
+    .. important::
+        This Metric is no longer used in this competition.
+
     It is desirable to have a smooth trajectory, which will reduce the tear and wear of
     of the actuator. If the average jerk at are above the threshold, the deployability
     penalty will accumulate 1 points. Cubic polynomial are used to interpolate the

@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+
 from air_hockey_challenge import __version__
 
 setup(

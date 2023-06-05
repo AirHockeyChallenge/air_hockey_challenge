@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+
 from air_hockey_challenge.framework import AgentBase, AirHockeyChallengeWrapper
 
 
@@ -108,4 +109,3 @@ if __name__ == '__main__':
     print("agent_load.agent_id: ", agent_load.agent_id)
     print("agent_load.robot_model: ", agent_load.robot_model)
     print("agent_load.robot_data: ", agent_load.robot_data)
-

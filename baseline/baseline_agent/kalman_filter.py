@@ -11,8 +11,7 @@ COL_COV = \
               [0., 0., 2.09562546e-01, 3.46276805e-02, 0., -1.03489604e+00],
               [0., 0., 3.46276805e-02, 9.41218351e-02, 0., -1.67029496e+00],
               [0., 0., 0., 0., 0., 0.],
-              [0., 0., -1.03489604e+00, -1.67029496e+00, 0.,  1.78037877e+02]])
-
+              [0., 0., -1.03489604e+00, -1.67029496e+00, 0., 1.78037877e+02]])
 
 OBS_COV = np.diag([5.0650402e-07, 8.3995428e-07, 1.6572967e-03])
 
@@ -280,10 +279,14 @@ def puck_tracker_exp():
         ax_y_vel = fig.add_subplot(gs[1, 3])
         ax_theta_vel = fig.add_subplot(gs[2, 3])
 
-        ax2d.plot(kalman_filter.system.table.boundary[0, :, 0], kalman_filter.system.table.boundary[0, :, 1], c='k', lw=5)
-        ax2d.plot(kalman_filter.system.table.boundary[1, :, 0], kalman_filter.system.table.boundary[1, :, 1], c='k', lw=5)
-        ax2d.plot(kalman_filter.system.table.boundary[2, :, 0], kalman_filter.system.table.boundary[2, :, 1], c='k', lw=5)
-        ax2d.plot(kalman_filter.system.table.boundary[3, :, 0], kalman_filter.system.table.boundary[3, :, 1], c='k', lw=5)
+        ax2d.plot(kalman_filter.system.table.boundary[0, :, 0], kalman_filter.system.table.boundary[0, :, 1], c='k',
+                  lw=5)
+        ax2d.plot(kalman_filter.system.table.boundary[1, :, 0], kalman_filter.system.table.boundary[1, :, 1], c='k',
+                  lw=5)
+        ax2d.plot(kalman_filter.system.table.boundary[2, :, 0], kalman_filter.system.table.boundary[2, :, 1], c='k',
+                  lw=5)
+        ax2d.plot(kalman_filter.system.table.boundary[3, :, 0], kalman_filter.system.table.boundary[3, :, 1], c='k',
+                  lw=5)
         ax2d.plot(traj[:, 0], traj[:, 1])
         ax2d.plot(traj[:, 6], traj[:, 7])
 

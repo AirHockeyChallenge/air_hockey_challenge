@@ -1,4 +1,5 @@
 import numpy as np
+
 from air_hockey_challenge.utils.kinematics import forward_kinematics
 
 
@@ -17,7 +18,7 @@ class UniversalJointPlugin:
         self.universal_joint_ctrl_ids += [env_model.actuator("iiwa_1/striker_joint_1").id,
                                           env_model.actuator("iiwa_1/striker_joint_2").id]
         action_spec = ["iiwa_1/joint_1", "iiwa_1/joint_2", "iiwa_1/joint_3", "iiwa_1/joint_4", "iiwa_1/joint_5",
-                        "iiwa_1/joint_6", "iiwa_1/joint_7"]
+                       "iiwa_1/joint_6", "iiwa_1/joint_7"]
 
         if self.env_info['n_agents'] >= 2:
             self.universal_joint_ids += [env_model.joint("iiwa_2/striker_joint_1").id,
@@ -58,7 +59,7 @@ class UniversalJointPlugin:
 
     def _compute_universal_joint(self):
         for i in range(self.env_info['n_agents']):
-            q = self.env_data.qpos[self.actuator_joint_ids[i*7: (i+1)*7]]
+            q = self.env_data.qpos[self.actuator_joint_ids[i * 7: (i + 1) * 7]]
             # Have to exclude the puck joints
             pos, rot_mat = forward_kinematics(self.env_info['robot']['robot_model'],
                                               self.env_info['robot']['robot_data'], q)
@@ -107,6 +108,7 @@ class UniversalJointPlugin:
             if self.u_joint_pos_prev is None:
                 self.u_joint_pos_des[i * 2: i * 2 + 2] = np.array([alpha_y, alpha_x])
             else:
-                self.u_joint_pos_des[i * 2: i * 2 + 2] += np.clip(np.array([alpha_y, alpha_x]) - self.u_joint_pos_des[i * 2: i * 2 + 2],
-                                                                  -np.pi * 0.001, np.pi * 0.001)
+                self.u_joint_pos_des[i * 2: i * 2 + 2] += np.clip(
+                    np.array([alpha_y, alpha_x]) - self.u_joint_pos_des[i * 2: i * 2 + 2],
+                    -np.pi * 0.001, np.pi * 0.001)
         return self.u_joint_pos_des

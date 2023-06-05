@@ -1,6 +1,5 @@
-import time
-
 import numpy as np
+
 from baseline.baseline_agent.system_state import SystemState, TACTICS
 from baseline.baseline_agent.trajectory_generator import TrajectoryGenerator
 
@@ -42,7 +41,8 @@ class Tactic:
 
     def _set_tactic(self, tactic):
         if tactic != self.state.tactic_current:
-            print("Agent: ", self.state.agent_id, "Switch tactic from: ", self.state.tactic_current.name, " to: ", tactic.name)
+            print("Agent: ", self.state.agent_id, "Switch tactic from: ", self.state.tactic_current.name, " to: ",
+                  tactic.name)
             self.state.is_new_tactic = True
             self.state.switch_tactics_count = 0
             self.state.tactic_current = tactic
@@ -66,7 +66,7 @@ class Tactic:
             elif self.state.predicted_time < self.agent_params['max_prediction_time'] and \
                     self.state.predicted_state[0] > self.agent_params['defend_range'][1]:
                 self.state.predicted_time += ((self.agent_params['defend_range'][1] - self.state.predicted_state[0]) /
-                        self.state.predicted_state[2])
+                                              self.state.predicted_state[2])
                 self.state.predicted_time = np.clip(self.state.predicted_time, 0,
                                                     self.agent_params['max_prediction_time'])
         return False
@@ -119,7 +119,8 @@ class Init(Tactic):
 
 
 class Ready(Tactic):
-    def __init__(self, env_info, agent_params, state: SystemState, trajectory_generator: TrajectoryGenerator, only_tactic=None):
+    def __init__(self, env_info, agent_params, state: SystemState, trajectory_generator: TrajectoryGenerator,
+                 only_tactic=None):
         super(Ready, self).__init__(env_info, agent_params, state, trajectory_generator)
 
         self.only_tactic = only_tactic
@@ -191,7 +192,7 @@ class Ready(Tactic):
                 self.replan_time = self.agent_params['max_plan_steps'] * self.generator.dt
                 self.plan_new_trajectory = False
                 self.t_stop = self.generator.bezier_planner.t_final - \
-                    self.state.trajectory_buffer.shape[0] * self.generator.dt
+                              self.state.trajectory_buffer.shape[0] * self.generator.dt
                 self.state.predicted_time = np.maximum(0, self.state.predicted_time)
                 return
             self.t_stop *= 1.5
@@ -435,7 +436,7 @@ class Smash(Tactic):
                 self.replan_time = self.agent_params['max_plan_steps'] * self.generator.dt
                 self.plan_new_trajectory = False
                 self.state.predicted_time = self.generator.bezier_planner.t_final - \
-                    self.state.trajectory_buffer.shape[0] * self.generator.dt
+                                            self.state.trajectory_buffer.shape[0] * self.generator.dt
                 self.state.predicted_time = np.maximum(0, self.state.predicted_time)
                 return
 

@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
-from obs import ObsClient
-import yaml
-from pathlib import Path
 import os
+from pathlib import Path
+
+import yaml
+from obs import ObsClient
 
 
 def download_dataset(download_dir="downloads"):
@@ -40,7 +41,8 @@ def download_dataset(download_dir="downloads"):
             print("There is no new Dataset available")
             return
 
-    resp = obsClient.getObject(bucketName, objectKey, downloadPath=os.path.join(download_dir, f"dataset-{last_modified}.zip"))
+    resp = obsClient.getObject(bucketName, objectKey,
+                               downloadPath=os.path.join(download_dir, f"dataset-{last_modified}.zip"))
 
     if resp['status'] != 200:
         raise Exception("Could not get Object: ", resp['reason'])

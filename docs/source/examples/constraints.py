@@ -1,6 +1,4 @@
-import numpy as np
 from air_hockey_challenge.framework import AirHockeyChallengeWrapper
-
 
 env = AirHockeyChallengeWrapper('3dof-hit')
 

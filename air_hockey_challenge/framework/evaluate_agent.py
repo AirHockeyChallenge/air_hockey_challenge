@@ -1,27 +1,24 @@
+import datetime
+import gc
+import json
+import os
+from collections import defaultdict
+
+import numpy as np
+import torch
+from joblib import Parallel, delayed
+
 from air_hockey_challenge.framework.air_hockey_challenge_wrapper import AirHockeyChallengeWrapper
 from air_hockey_challenge.framework.challenge_core import ChallengeCore
-
 from mushroom_rl.core import Logger
 from mushroom_rl.utils.dataset import compute_episodes_length
 
-from joblib import Parallel, delayed
-import numpy as np
-from collections import defaultdict
-
-import torch
-import os
-import datetime
-import json
-import itertools
-import gc
-
-
-PENALTY_POINTS = {"joint_pos_constr": 2, "ee_constr": 3, "joint_vel_constr": 1, "jerk": 1, "computation_time_minor": 0.5,
-                  "computation_time_middle": 1,  "computation_time_major": 2}
+PENALTY_POINTS = {"joint_pos_constr": 2, "ee_constr": 3, "joint_vel_constr": 1, "computation_time_minor": 0.5,
+                  "computation_time_middle": 1, "computation_time_major": 2}
 
 
 def evaluate(agent_builder, log_dir, env_list, n_episodes=1080, n_cores=-1, seed=None, generate_score=None,
-             quiet=True, render=False, **kwargs):
+             quiet=True, render=False, interpolation_order=3, **kwargs):
     """
     Function that will run the evaluation of the agent for a given set of environments. The resulting Dataset and
     constraint stats will be written to folder specified in log_dir. The resulting Dataset can be replayed by the
@@ -42,6 +39,10 @@ def evaluate(agent_builder, log_dir, env_list, n_episodes=1080, n_cores=-1, seed
             ["7dof-hit", "7dof-defend", "7dof-prepare"] for the phase-2 report.
         quiet (bool, True): set to True to disable tqdm progress bars
         render (bool, False): set to True to spawn a viewer that renders the simulation
+        interpolation_order (int, 3): Type of interpolation used, has to correspond to action shape. Order 1-5 are
+                    polynomial interpolation of the degree. Order -1 is linear interpolation of position and velocity.
+                    Set Order to None in order to turn off interpolation. In this case the action has to be a trajectory
+                    of position, velocity and acceleration of the shape (20, 3, n_joints)
         kwargs (any): Argument passed to the Agent init
     """
 
@@ -67,10 +68,10 @@ def evaluate(agent_builder, log_dir, env_list, n_episodes=1080, n_cores=-1, seed
     summary = "=================================================\n"
     for env, chunks in zip(env_list, env_init_chuncks):
 
-        # returns: dataset, success, penalty_sum, constraints_dict, jerk, computation_time, violations, metric_dict
+        # returns: dataset, success, penalty_sum, constraints_dict, computation_time, violations, metric_dict
         data = Parallel(n_jobs=n_cores)(delayed(_evaluate)(path, env, agent_builder, chunks[i], quiet, render,
                                                            sum([len(x) for x in chunks[:i]]), compute_seed(seed, i), i,
-                                                           **kwargs) for i in range(n_cores))
+                                                           interpolation_order, **kwargs) for i in range(n_cores))
 
         logger = Logger(log_name=env, results_dir=path)
 
@@ -87,9 +88,6 @@ def evaluate(agent_builder, log_dir, env_list, n_episodes=1080, n_cores=-1, seed
         violation_stats = defaultdict(int)
         for eps in violations.values():
             for el in eps:
-                if "jerk" in el:
-                    violation_stats["Jerk"] += 1
-
                 if "computation" in el:
                     violation_stats["Computation Time"] += 1
 
@@ -109,24 +107,12 @@ def evaluate(agent_builder, log_dir, env_list, n_episodes=1080, n_cores=-1, seed
         # Concat the data saved by the workers. One by one so its memory efficient
         computation_time = np.zeros(sum(n_steps))
         for i in range(n_cores):
-            computation_time[sum(n_steps[:i]): sum(n_steps[:i+1])] = np.load(os.path.join(logger.path, f"computation_time-{i}.npy"))
+            computation_time[sum(n_steps[:i]): sum(n_steps[:i + 1])] = np.load(
+                os.path.join(logger.path, f"computation_time-{i}.npy"))
             os.remove(os.path.join(logger.path, f"computation_time-{i}.npy"))
 
         logger.log_numpy_array(computation_time=computation_time)
         del computation_time
-
-        jerk_0 = np.load(os.path.join(logger.path, "jerk-0.npy"))
-        os.remove(os.path.join(logger.path, "jerk-0.npy"))
-        jerk = np.zeros((sum(n_steps), jerk_0.shape[1]))
-        jerk[:n_steps[0]] = jerk_0
-        for i in range(1, n_cores):
-            jerk[sum(n_steps[:i]): sum(n_steps[:i + 1])] = np.load(
-                os.path.join(logger.path, f"jerk-{i}.npy"))
-            os.remove(os.path.join(logger.path, f"jerk-{i}.npy"))
-
-        logger.log_numpy_array(jerk=jerk)
-        del jerk
-        del jerk_0
 
         for name in constraint_names:
             const_0 = np.load(os.path.join(logger.path, f"{name}-0.npy"))
@@ -191,24 +177,26 @@ def evaluate(agent_builder, log_dir, env_list, n_episodes=1080, n_cores=-1, seed
 
         os.system("chmod -R 777 {}".format(log_dir))
 
-def _evaluate(log_dir, env, agent_builder, init_states, quiet, render, episode_offset, seed, i, **kwargs):
+
+def _evaluate(log_dir, env, agent_builder, init_states, quiet, render, episode_offset, seed, i, interpolation_order, **kwargs):
     if seed is not None:
         np.random.seed(seed)
         torch.manual_seed(seed)
 
     eval_params = {"quiet": quiet, "render": render, "initial_states": init_states}
 
-    mdp = AirHockeyChallengeWrapper(env)
+    mdp = AirHockeyChallengeWrapper(env, interpolation_order=interpolation_order)
 
     agent = agent_builder(mdp.env_info, **kwargs)
-    core = ChallengeCore(agent, mdp)
+    core = ChallengeCore(agent, mdp, is_tournament=False, init_state=mdp.base_env.init_state)
 
-    dataset, success, penalty_sum, constraints_dict, jerk, computation_time, violations = compute_metrics(core, eval_params, episode_offset)
+    dataset, success, penalty_sum, constraints_dict, computation_time, violations = compute_metrics(core, eval_params,
+                                                                                                    episode_offset)
 
     logger = Logger(log_name=env, results_dir=log_dir, seed=i)
 
     logger.log_dataset(dataset)
-    logger.log_numpy_array(jerk=jerk, computation_time=computation_time, **constraints_dict)
+    logger.log_numpy_array(computation_time=computation_time, **constraints_dict)
 
     n_steps = len(computation_time)
 
@@ -222,7 +210,8 @@ def compute_metrics(core, eval_params, episode_offset):
     n_episodes = len(episode_length)
 
     # Turn list of dicts to dict of lists
-    constraints_dict = {k: [dic[k] for dic in dataset_info["constraints_value"]] for k in dataset_info["constraints_value"][0]}
+    constraints_dict = {k: [dic[k] for dic in dataset_info["constraints_value"]] for k in
+                        dataset_info["constraints_value"][0]}
     success = 0
     penalty_sum = 0
     current_idx = 0
@@ -238,11 +227,6 @@ def compute_metrics(core, eval_params, episode_offset):
             if np.any(np.array(constraints_dict[name][current_idx: current_idx + episode_len]) > 0):
                 penalty_sum += PENALTY_POINTS[name]
                 violations["Episode " + str(current_eps)].append(name + " violated")
-
-        # TODO set jerk limit to value that makes sense, idk whats good
-        if np.any(np.array(dataset_info["jerk"][current_idx: current_idx + episode_len]) > 10000):
-            penalty_sum += PENALTY_POINTS["jerk"]
-            violations["Episode " + str(current_eps)].append("jerk > 10000")
 
         max_time_violations = np.max(dataset_info["computation_time"][current_idx: current_idx + episode_len])
         mean_time_violations = np.mean(dataset_info["computation_time"][current_idx: current_idx + episode_len])
@@ -266,7 +250,7 @@ def compute_metrics(core, eval_params, episode_offset):
 
     success = success / n_episodes
 
-    return dataset, success, penalty_sum, constraints_dict, dataset_info["jerk"], dataset_info["computation_time"], violations
+    return dataset, success, penalty_sum, constraints_dict, dataset_info["computation_time"], violations
 
 
 def compute_seed(seed, i):
@@ -287,7 +271,8 @@ def generate_init_states(env, n_episodes, n_parallel_cores):
                   range(n_parallel_cores)]
 
     for chunk_len in chunk_lens:
-        init_states_chunk = np.zeros((chunk_len, ) + mdp.info.observation_space.low.shape)
+        mdp.reset()
+        init_states_chunk = np.zeros((chunk_len, mdp.base_env._obs.shape[0]))
         for i in range(chunk_len):
             mdp.reset()
             init_states_chunk[i] = mdp.base_env._obs.copy()

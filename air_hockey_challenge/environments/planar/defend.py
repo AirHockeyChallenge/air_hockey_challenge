@@ -6,9 +6,9 @@ from air_hockey_challenge.environments.planar.single import AirHockeySingle
 class AirHockeyDefend(AirHockeySingle):
     """
     Class for the air hockey defending task.
-    The agent tries to stop the puck at the line x=-0.6.
-    If the puck get into the goal, it will get a punishment.
+    The agent should stop the puck at the line x=-0.6.
     """
+
     def __init__(self, gamma=0.99, horizon=500, viewer_params={}):
 
         self.init_velocity_range = (1, 3)
@@ -34,7 +34,7 @@ class AirHockeyDefend(AirHockeySingle):
         self._write_data("puck_x_vel", puck_vel[0])
         self._write_data("puck_y_vel", puck_vel[1])
         self._write_data("puck_yaw_vel", puck_vel[2])
-        
+
         super(AirHockeyDefend, self).setup(state)
 
     def reward(self, state, action, next_state, absorbing):
@@ -44,6 +44,8 @@ class AirHockeyDefend(AirHockeySingle):
         puck_pos, puck_vel = self.get_puck(state)
         # If puck is over the middle line and moving towards opponent
         if puck_pos[0] > 0 and puck_vel[0] > 0:
+            return True
+        if np.linalg.norm(puck_vel[:2]) < 0.1:
             return True
         return super().is_absorbing(state)
 

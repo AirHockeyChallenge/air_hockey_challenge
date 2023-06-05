@@ -163,7 +163,7 @@ Installing Custom Dependencies
 If you just want to add pip dependencies you can modify the requirements.txt and rebuild the image.
 
 To add other dependencies you can modify the Dockerfile and rebuild the image.
-Add a ``RUN your-install-command`` to the Dockerfile below line 25.
+Add a ``RUN your-install-command`` to the Dockerfile below line 34.
 Keep in mind to auto-accept all question than might come up during the install.
 
 For example to add nano to the image the command would be

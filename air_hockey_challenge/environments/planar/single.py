@@ -1,5 +1,5 @@
-import numpy as np
 import mujoco
+import numpy as np
 
 from air_hockey_challenge.environments.planar import AirHockeyBase
 
@@ -9,13 +9,14 @@ class AirHockeySingle(AirHockeyBase):
     Base class for single agent air hockey tasks.
 
     """
+
     def __init__(self, gamma=0.99, horizon=500, viewer_params={}):
 
         """
         Constructor.
 
         """
-        self.init_state = np.array([-1.15570723,  1.30024401,  1.44280414])
+        self.init_state = np.array([-1.15570723, 1.30024401, 1.44280414])
         super().__init__(gamma=gamma, horizon=horizon, n_agents=1, viewer_params=viewer_params)
 
         self.filter_ratio = 0.274
@@ -43,8 +44,8 @@ class AirHockeySingle(AirHockeyBase):
         q_pos = np.zeros(3)
         q_vel = np.zeros(3)
         for i in range(3):
-            q_pos[i] = self.obs_helper.get_from_obs(obs, "robot_1/joint_" + str(i+1) + "_pos")[0]
-            q_vel[i] = self.obs_helper.get_from_obs(obs, "robot_1/joint_" + str(i+1) + "_vel")[0]
+            q_pos[i] = self.obs_helper.get_from_obs(obs, "robot_1/joint_" + str(i + 1) + "_pos")[0]
+            q_vel[i] = self.obs_helper.get_from_obs(obs, "robot_1/joint_" + str(i + 1) + "_vel")[0]
 
         return q_pos, q_vel
 
@@ -68,7 +69,7 @@ class AirHockeySingle(AirHockeyBase):
 
     def setup(self, state=None):
         for i in range(3):
-            self._data.joint("planar_robot_1/joint_" + str(i+1)).qpos = self.init_state[i]
+            self._data.joint("planar_robot_1/joint_" + str(i + 1)).qpos = self.init_state[i]
             self.q_pos_prev[i] = self.init_state[i]
             self.q_vel_prev[i] = self._data.joint("planar_robot_1/joint_" + str(i + 1)).qvel
 
@@ -83,7 +84,7 @@ class AirHockeySingle(AirHockeyBase):
         self.q_vel_prev = q_vel_filter
 
         for i in range(3):
-            self.obs_helper.get_from_obs(obs, "robot_1/joint_" + str(i+1) + "_vel")[:] = q_vel_filter[i]
+            self.obs_helper.get_from_obs(obs, "robot_1/joint_" + str(i + 1) + "_vel")[:] = q_vel_filter[i]
 
         yaw_angle = self.obs_helper.get_from_obs(obs, "puck_yaw_pos")
         self.obs_helper.get_from_obs(obs, "puck_yaw_pos")[:] = (yaw_angle + np.pi) % (2 * np.pi) - np.pi

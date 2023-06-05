@@ -4,5 +4,5 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "Robot Air Hockey Challenge"
-authors = [{name = "Puze Liu", email = "puze@robot-learning.de"}]
+authors = [{ name = "Puze Liu", email = "puze@robot-learning.de" }]
 dynamic = ["version", "description"]
