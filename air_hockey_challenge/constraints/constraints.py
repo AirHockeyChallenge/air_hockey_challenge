@@ -1,5 +1,7 @@
 import copy
+
 import numpy as np
+
 from air_hockey_challenge.utils.kinematics import forward_kinematics, jacobian
 
 
