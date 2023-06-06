@@ -55,7 +55,7 @@ class PositionControl:
             if self.interp_order[i] is None:
                 self.action_shape[i] = (int(self.dt / self._timestep), 3, self.n_robot_joints)
             elif self.interp_order[i] in [1, 2]:
-                self.action_shape[i] = (1, self.n_robot_joints)
+                self.action_shape[i] = (self.n_robot_joints,)
             elif self.interp_order[i] in [3, 4, -1]:
                 self.action_shape[i] = (2, self.n_robot_joints)
             elif self.interp_order[i] == 5:
