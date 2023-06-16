@@ -7,4 +7,4 @@ osqp>=0.6.2.post8
 nlopt>=2.7.1
 mushroom-rl
 PyYAML>=6.0
-git+https://github.com/huaweicloud/huaweicloud-sdk-python-obs.git#egg=esdk-obs-python&subdirectory=src
+git+https://github.com/huaweicloud/huaweicloud-sdk-python-obs.git#egg=sdk-obs-python&subdirectory=src
