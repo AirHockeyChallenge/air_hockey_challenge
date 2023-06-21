@@ -173,7 +173,7 @@ def main():
     import matplotlib
     matplotlib.use("tkAgg")
 
-    env = AirHockeyChallengeWrapper(env="3dof-defend", debug=True)
+    env = AirHockeyChallengeWrapper(env="7dof-defend", interpolation_order=3, debug=True)
 
     agent = DefendingAgent(env.base_env.env_info)
 

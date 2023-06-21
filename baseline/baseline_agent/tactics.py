@@ -232,11 +232,11 @@ class Prepare(Tactic):
         puck_pos_2d = self.state.predicted_state[:2]
 
         if puck_pos_2d[0] < self.agent_params['prepare_range'][0]:
-            hit_dir_2d = np.array([-1, np.sign(puck_pos_2d[1] + 1e-6) * 0.5])
-            hit_vel_mag = 0.3
+            hit_dir_2d = np.array([-1, np.sign(puck_pos_2d[1] + 1e-6) * 0.2])
+            hit_vel_mag = 0.2
         elif abs(puck_pos_2d[0]) > np.mean(self.agent_params['prepare_range']):
-            hit_dir_2d = np.array([-1, np.sign(puck_pos_2d[1] + 1e-6)])
-            hit_vel_mag = 0.3
+            hit_dir_2d = np.array([-0.5, np.sign(puck_pos_2d[1] + 1e-6)])
+            hit_vel_mag = 0.2
         else:
             hit_dir_2d = np.array([0, np.sign(puck_pos_2d[1] + 1e-6)])
             hit_vel_mag = 0.2

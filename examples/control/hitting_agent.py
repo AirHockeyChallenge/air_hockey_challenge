@@ -96,7 +96,7 @@ class HittingAgent(AgentBase):
         self.predicted_time = 0.75
         self.hit_vel = 1.0
         self.replan_hit = False
-        self.plan_thread = threading.Thread(target=self._plan_trajectory_thread)
+        self.plan_thread = threading.Thread(target=self._plan_trajectory_thread, daemon=True)
 
     def draw_action(self, obs):
         if self.restart:
@@ -284,7 +284,7 @@ class HittingAgent(AgentBase):
 def main():
     from air_hockey_challenge.framework.air_hockey_challenge_wrapper import AirHockeyChallengeWrapper
     plot_trajectory = False
-    env = AirHockeyChallengeWrapper(env="7dof-hit", action_type="position-velocity", debug=plot_trajectory)
+    env = AirHockeyChallengeWrapper(env="7dof-hit", interpolation_order=3, debug=plot_trajectory)
 
     agent = HittingAgent(env.base_env.env_info)
 
