@@ -46,6 +46,8 @@ class AirHockeyChallengeWrapper(Environment):
         constraint_list.add(JointPositionConstraint(self.env_info))
         constraint_list.add(JointVelocityConstraint(self.env_info))
         constraint_list.add(EndEffectorConstraint(self.env_info))
+        if "7dof" in self.env_name:
+            constraint_list.add(LinkConstraint(self.env_info))
 
         self.env_info['constraints'] = constraint_list
         self.env_info['env_name'] = self.env_name
@@ -104,7 +106,7 @@ class AirHockeyChallengeWrapper(Environment):
 
 
 if __name__ == "__main__":
-    env = AirHockeyChallengeWrapper(env="3dof-hit")
+    env = AirHockeyChallengeWrapper(env="7dof-hit")
     env.reset()
 
     R = 0.

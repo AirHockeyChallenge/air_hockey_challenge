@@ -13,8 +13,8 @@ from air_hockey_challenge.framework.challenge_core import ChallengeCore
 from mushroom_rl.core import Logger
 from mushroom_rl.utils.dataset import compute_episodes_length
 
-PENALTY_POINTS = {"joint_pos_constr": 2, "ee_constr": 3, "joint_vel_constr": 1, "computation_time_minor": 0.5,
-                  "computation_time_middle": 1, "computation_time_major": 2}
+PENALTY_POINTS = {"joint_pos_constr": 2, "ee_constr": 3, "link_constr": 3, "joint_vel_constr": 1,
+                  "computation_time_minor": 0.5, "computation_time_middle": 1, "computation_time_major": 2}
 
 
 def evaluate(agent_builder, log_dir, env_list, n_episodes=1080, n_cores=-1, seed=None, generate_score=None,

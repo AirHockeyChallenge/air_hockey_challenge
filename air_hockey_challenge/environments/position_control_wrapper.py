@@ -76,16 +76,16 @@ class PositionControl:
         joint_pos_lim = np.tile(self.env_info['robot']['joint_pos_limit'], (1, self.n_agents))
         joint_vel_lim = np.tile(self.env_info['robot']['joint_vel_limit'], (1, self.n_agents))
 
-        min_vel = np.clip(-k * (pos - joint_pos_lim[0]), joint_vel_lim[0], joint_vel_lim[1])
+        min_vel = np.minimum(np.maximum(-k * (pos - joint_pos_lim[0]), joint_vel_lim[0]), joint_vel_lim[1])
 
-        max_vel = np.clip(-k * (pos - joint_pos_lim[1]), joint_vel_lim[0], joint_vel_lim[1])
+        max_vel = np.minimum(np.maximum(-k * (pos - joint_pos_lim[1]), joint_vel_lim[0]), joint_vel_lim[1])
 
-        clipped_vel = np.clip(desired_vel, min_vel, max_vel)
+        clipped_vel = np.minimum(np.maximum(desired_vel, min_vel), max_vel)
 
         min_pos = pos + min_vel * self._timestep
         max_pos = pos + max_vel * self._timestep
 
-        clipped_pos = np.clip(desired_pos, min_pos, max_pos)
+        clipped_pos = np.minimum(np.maximum(desired_pos, min_pos), max_pos)
         self.prev_controller_cmd_pos = clipped_pos.copy()
 
         return clipped_pos, clipped_vel
@@ -113,9 +113,9 @@ class PositionControl:
             # Gravity Compensation and Coriolis and Centrifugal force
             torque[robot_joint_ids] += self.robot_data.qfrc_bias
 
-            torque[robot_joint_ids] = np.clip(torque[robot_joint_ids],
-                                              self.robot_model.actuator_ctrlrange[:, 0],
-                                              self.robot_model.actuator_ctrlrange[:, 1])
+            torque[robot_joint_ids] = np.minimum(np.maximum(torque[robot_joint_ids],
+                                                            self.robot_model.actuator_ctrlrange[:, 0]),
+                                                 self.robot_model.actuator_ctrlrange[:, 1])
 
         if self.debug:
             self.controller_record.append(

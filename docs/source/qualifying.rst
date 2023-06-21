@@ -175,6 +175,46 @@ of the command should be [2, N_joints].
 ``None``: You can send a complete trajectory between each action step. At each step, the trajectory command
 should include desired [position, velocity, acceleration]. The shape of the command should be [20, 3, N_joints].
 
+
+Constraints
+-----------
+
+For 7 DoF Environments, additional constraints are added that ensures positions of the elbow and the wrist are
+above a threshold. The updated constraints table is listed here
+
+.. list-table::
+   :widths: 20 10 10 50
+   :header-rows: 1
+
+   * - Class Name
+     - Key
+     - Output Dim
+     - Description
+   * - JointPositionConstraint
+     - "joint_pos_constr"
+     - 2 * num_joints
+     - :math:`q_l < q_{cmd} < q_u`
+   * - JointVelocityConstraint
+     - "joint_vel_constr"
+     - 2 * num_joints
+     - :math:`\dot{q}_l < \dot{q}_{cmd} < \dot{q}_u`
+   * - EndEffectorConstraint
+     - "ee_constr"
+     - 5
+     - :math:`l_x < x_{ee},`
+
+       :math:`l_y < y_{ee} < u_y,`
+
+       :math:`z_{ee} > \mathrm{table\,height - tolerance}`,
+
+       :math:`z_{ee} < \mathrm{table\, height + tolerance}`.
+   * - LinkConstraint (7DoF Robot Only)
+     - "link_constr"
+     - 2
+     - :math:`z_{elbow} > 0.25`,
+
+       :math:`z_{wrist} > 0.25``
+
 Evaluation
 ----------
 

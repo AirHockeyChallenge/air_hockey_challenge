@@ -8,7 +8,7 @@ class UniversalJointPlugin:
         self.env_info = env_info
         self.env_model = env_model
         self.env_data = env_data
-        self.Kp = 4
+        self.Kp = 10
         self.Kd = 0.31
 
         self.universal_joint_ids = []
@@ -73,7 +73,7 @@ class UniversalJointPlugin:
 
             # Find the signed angle from the current to the desired x-axis around the y-axis
             # https://stackoverflow.com/questions/5188561/signed-angle-between-two-3d-vectors-with-same-origin-within-the-same-plane
-            q1 = np.arctan2(np.cross(v_x, x_desired) @ v_y, v_x @ x_desired)
+            q1 = np.arctan2(self._cross_3d(v_x, x_desired) @ v_y, v_x @ x_desired)
             if self.u_joint_pos_prev is not None:
                 if q1 - self.u_joint_pos_prev[0] > np.pi:
                     q1 -= np.pi * 2
@@ -94,7 +94,7 @@ class UniversalJointPlugin:
             y_desired = np.array([v_x_rotated[1], - v_x_rotated[0], 0])
 
             # Find the signed angle from the current to the desired y-axis around the new rotated x-axis
-            q2 = np.arctan2(np.cross(v_y, y_desired) @ v_x_rotated, v_y @ y_desired)
+            q2 = np.arctan2(self._cross_3d(v_y, y_desired) @ v_x_rotated, v_y @ y_desired)
 
             if self.u_joint_pos_prev is not None:
                 if q2 - self.u_joint_pos_prev[1] > np.pi:
@@ -102,13 +102,16 @@ class UniversalJointPlugin:
                 elif q2 - self.u_joint_pos_prev[1] < -np.pi:
                     q2 += np.pi * 2
 
-            alpha_y = np.clip(q1, -np.pi / 2 * 0.95, np.pi / 2 * 0.95)
-            alpha_x = np.clip(q2, -np.pi / 2 * 0.95, np.pi / 2 * 0.95)
+            alpha_y = np.minimum(np.maximum(q1, -np.pi / 2 * 0.95), np.pi / 2 * 0.95)
+            alpha_x = np.minimum(np.maximum(q2, -np.pi / 2 * 0.95), np.pi / 2 * 0.95)
 
             if self.u_joint_pos_prev is None:
                 self.u_joint_pos_des[i * 2: i * 2 + 2] = np.array([alpha_y, alpha_x])
             else:
-                self.u_joint_pos_des[i * 2: i * 2 + 2] += np.clip(
+                self.u_joint_pos_des[i * 2: i * 2 + 2] += np.minimum(np.maximum(
                     np.array([alpha_y, alpha_x]) - self.u_joint_pos_des[i * 2: i * 2 + 2],
-                    -np.pi * 0.001, np.pi * 0.001)
+                    -np.pi * 0.001), np.pi * 0.001)
         return self.u_joint_pos_des
+
+    def _cross_3d(self, a, b):
+        return np.array([a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]])
