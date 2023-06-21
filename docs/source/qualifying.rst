@@ -213,7 +213,7 @@ above a threshold. The updated constraints table is listed here
      - 2
      - :math:`z_{elbow} > 0.25`,
 
-       :math:`z_{wrist} > 0.25``
+       :math:`z_{wrist} > 0.25`
 
 Evaluation
 ----------
