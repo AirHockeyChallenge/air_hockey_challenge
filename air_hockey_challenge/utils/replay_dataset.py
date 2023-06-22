@@ -7,14 +7,14 @@ from air_hockey_challenge.framework import AirHockeyChallengeWrapper
 def replay_dataset(env_name, dataset_path):
     dataset = np.load(dataset_path, allow_pickle=True)
 
-    mdp = AirHockeyChallengeWrapper(env_name)
+    mdp = AirHockeyChallengeWrapper(env_name, interpolation_order=1)
     if env_name != "7dof-hit":
         mdp.reset()
 
         mujoco_idx = mdp.base_env.obs_helper.joint_mujoco_idx.copy()
         obs_idx = mdp.base_env.obs_helper.joint_pos_idx.copy()
 
-        if env_name is "tournament":
+        if env_name == "tournament":
             # Remove the second puck obs idx so the correctly oriented one is copied
             del mujoco_idx[10:13]
             del obs_idx[10:13]
@@ -39,11 +39,12 @@ def replay_dataset(env_name, dataset_path):
         pos_idx = pos_idx[true_idx]
 
         for step in dataset:
-
-            action = np.zeros(mdp.env_info['robot']["n_joints"])
+            action = mdp.base_env.init_state
             mdp.step(action)
             mdp.base_env._data.qpos[mujoco_idx] = step[0][pos_idx]
-            # mdp.base_env._data.joint("puck_x").qpos -= 1.51
+            mdp.base_env._data.qvel[mujoco_idx] = 0
+
+            mdp.base_env._data.joint("puck_x").qpos -= 1.51
 
             mujoco.mj_fwdPosition(mdp.base_env._model, mdp.base_env._data)
 
@@ -54,4 +55,4 @@ def replay_dataset(env_name, dataset_path):
 
 
 if __name__ == "__main__":
-    replay_dataset("tournament", "../../logs/eval-2023-05-15_16-09-01/Game_0/Home/dataset.pkl")
+    replay_dataset("7dof-hit", "path/to/dataset.pkl")
