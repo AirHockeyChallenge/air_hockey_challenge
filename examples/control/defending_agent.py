@@ -29,7 +29,7 @@ class DefendingAgent(AgentBase):
         self.joint_trajectory = None
         self.restart = True
         self.optimization_failed = False
-        self.has_planned = False
+        self.tactic_finished = False
         self.dt = 1 / self.env_info['robot']['control_frequency']
         self.ee_height = self.env_info['robot']["ee_desired_height"]
 
@@ -57,11 +57,16 @@ class DefendingAgent(AgentBase):
         self.puck_tracker = PuckTracker(env_info, agent_id=agent_id)
         self._obs = None
 
+        self.agent_params = {
+            'hit_range': [0.8, 1.3],
+            'max_plan_steps': 10,
+        }
+
     def reset(self):
         self.last_cmd = None
         self.joint_trajectory = []
         self.restart = True
-        self.has_planned = False
+        self.tactic_finished = False
         self.optimization_failed = False
 
         self._obs = None
@@ -74,6 +79,7 @@ class DefendingAgent(AgentBase):
             self.restart = False
             self.puck_tracker.reset(self.get_puck_pos(obs))
             self.last_cmd = np.vstack([self.get_joint_pos(obs), self.get_joint_vel(obs)])
+            self.joint_trajectory = np.array([self.last_cmd])
 
         self.puck_tracker.step(self.get_puck_pos(obs))
         self._obs = obs.copy()
@@ -85,34 +91,40 @@ class DefendingAgent(AgentBase):
             self.last_cmd[0] = joint_pos_des
         else:
             self.last_cmd[1] = np.zeros(self.env_info['robot']['n_joints'])
-            if not self.has_planned:
+            if not self.tactic_finished:
                 time.sleep(0.005)
         return self.last_cmd
 
     def _plan_trajectory_thread(self):
-        while not self.has_planned:
-            if self._obs is None:
-                continue
+        while not self.tactic_finished:
+            time.sleep(0.01)
+            opt_trial = 0
             t_predict = 1.0
             defend_line = 0.8
             state, P, t_predict = self.puck_tracker.get_prediction(t_predict, defend_line)
-            if np.linalg.det(P[:2, :2]) < 1e-3:
-                joint_pos = self.get_joint_pos(self._obs)
-                joint_vel = self.get_joint_vel(self._obs)
-                puck_pos = state[[0, 1, 4]]
-                ee_pos, _ = self.get_ee_pose(self._obs)
+            if len(self.joint_trajectory) < self.agent_params['max_plan_steps']:
+                if np.linalg.det(P[:2, :2]) < 1e-3:
+                    joint_pos = self.get_joint_pos(self._obs)
+                    joint_vel = self.get_joint_vel(self._obs)
+                    puck_pos = state[[0, 1, 4]]
+                    ee_pos, _ = self.get_ee_pose(self._obs)
 
-                ee_traj, switch_idx = self.plan_ee_trajectory(puck_pos, ee_pos, t_predict)
-                _, joint_pos_traj = self.optimizer.optimize_trajectory(ee_traj, joint_pos, joint_vel, None)
-                if len(joint_pos_traj) > 0:
-                    self.cubic_spline_interpolation(joint_pos_traj)
-                else:
-                    self.optimization_failed = True
-                    self.joint_trajectory = np.array([])
-
-                self.has_planned = True
-            else:
-                time.sleep(0.01)
+                    ee_traj, switch_idx = self.plan_ee_trajectory(puck_pos, ee_pos, t_predict)
+                    _, joint_pos_traj = self.optimizer.optimize_trajectory(ee_traj, joint_pos, joint_vel, None)
+                    if len(joint_pos_traj) > 0:
+                        if len(self.joint_trajectory) > 0:
+                            self.joint_trajectory = np.vstack([self.joint_trajectory,
+                                                               self.cubic_spline_interpolation(joint_pos_traj)])
+                        else:
+                            self.joint_trajectory = self.cubic_spline_interpolation(joint_pos_traj)
+                        self.tactic_finished = True
+                    else:
+                        opt_trial += 1
+                        self.optimization_failed = True
+                        self.joint_trajectory = np.array([])
+            if opt_trial >= 5:
+                self.tactic_finished = True
+                break
 
     def plan_ee_trajectory(self, puck_pos, ee_pos, t_plan):
         hit_dir_2d = np.array([0., np.sign(puck_pos[1])])
@@ -140,8 +152,7 @@ class DefendingAgent(AgentBase):
         last_vel_2d = hit_traj[-1, 3:5]
 
         # Plan Return Trajectory
-        stop_point = last_point_2d + hit_dir_2d * 0.1
-        stop_point[1] = 0
+        stop_point = np.array([0.65, 0.])
         self.bezier_planner.compute_control_point(last_point_2d, last_vel_2d, stop_point, np.zeros(2), 1.5)
 
         res = np.array([self.bezier_planner.get_point(t_i) for t_i in np.arange(0, self.bezier_planner.t_final + 1e-6,
@@ -160,11 +171,11 @@ class DefendingAgent(AgentBase):
 
     def cubic_spline_interpolation(self, joint_pos_traj):
         joint_pos_traj = np.array(joint_pos_traj)
-        t = np.linspace(1, joint_pos_traj.shape[0] + 1, joint_pos_traj.shape[0]) * 0.02
+        t = np.linspace(1, joint_pos_traj.shape[0], joint_pos_traj.shape[0]) * 0.02
 
         f = CubicSpline(t, joint_pos_traj, axis=0)
         df = f.derivative(1)
-        self.joint_trajectory = np.stack([f(t), df(t)]).swapaxes(0, 1)
+        return np.stack([f(t), df(t)]).swapaxes(0, 1)
 
 
 def main():
