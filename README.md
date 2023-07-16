@@ -4,7 +4,7 @@
 
 This is the source code for the Air Hockey Challenge.
 
-The current released version is **Warm Up**.
+The current released version is **Qualifying**.
 
 Please see the [documentation](https://air-hockey-challenges-docs.readthedocs.io/en/latest/) for Installation and usage.
 
