@@ -23,7 +23,7 @@ from mushroom_rl.utils.preprocessors import MinMaxPreprocessor
 @single_experiment
 def experiment(env: str = '7dof-hit',
                alg: str = "atacom-sac",
-               n_steps: int = 10000,
+               n_steps: int = 50000,
                n_epochs: int = 100,
                quiet: bool = True,
                n_steps_per_fit: int = 1,
@@ -39,7 +39,7 @@ def experiment(env: str = '7dof-hit',
                tau: float = 1e-3,
                warmup_transitions: int = 10000,
                lr_alpha: float = 1e-6,
-               target_entropy: float = -3,
+               target_entropy: float = -10,
                use_cuda: bool = False,
 
                interpolation_order: int = -1,
