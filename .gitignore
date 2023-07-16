@@ -1,3 +1,4 @@
+examples/rl/agents
 logs/
 .local/
 wandb/
