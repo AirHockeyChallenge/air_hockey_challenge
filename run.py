@@ -39,6 +39,8 @@ from pathlib import Path
 import yaml
 
 from air_hockey_challenge.framework.evaluate_agent import evaluate
+from air_hockey_challenge.framework.evaluate_tournament import run_tournament
+from air_hockey_challenge.utils.tournament_agent_server import run_tournament_server
 
 
 def convert_envs(env_list):
@@ -57,7 +59,8 @@ def get_args():
     parser = ArgumentParser()
     arg_test = parser.add_argument_group('override parameters')
 
-    env_choices = ["3dof-hit", "3dof-defend", "7dof-hit", "7dof-defend", "7dof-prepare", "3dof", "7dof"]
+    env_choices = ["3dof-hit", "3dof-defend", "7dof-hit", "7dof-defend", "7dof-prepare", "3dof", "7dof", "tournament",
+                   "tournament_server"]
 
     arg_test.add_argument("-e", "--env", nargs='*',
                           choices=env_choices,
@@ -71,7 +74,7 @@ def get_args():
     arg_test.add_argument("--log_dir", type=str,
                           help="The directory in which the logs are written")
 
-    arg_test.add_argument("--example", type=str, choices=["hit-agent", "defend-agent", "baseline", "sac"], default="")
+    arg_test.add_argument("--example", type=str, choices=["hit-agent", "defend-agent", "baseline", "atacom"], default="")
 
     default_path = Path(__file__).parent.joinpath("air_hockey_agent/agent_config.yml")
     arg_test.add_argument("-c", "--config", type=str, default=default_path,
@@ -83,6 +86,9 @@ def get_args():
                           help="Set to phase-1 or phase-2 to generate a report for phase one or two. Note that for the "
                                "generation of the phase-1 report the 3dof-hit, 3dof-defend envs "
                                "are required. For the phase 2 all the 7dof envs are required.")
+
+    arg_test.add_argument("--host", type=str, help="Host IP for tournament agent server")
+    arg_test.add_argument("--port", type=int, help="Host port for tournament agent server")
 
     args = vars(parser.parse_args())
     return args
@@ -112,7 +118,7 @@ if __name__ == "__main__":
         from examples.control.defending_agent import build_agent
     elif filtered_args["example"] == "baseline":
         from baseline.baseline_agent.baseline_agent import build_agent
-    elif filtered_args["example"] == "sac":
+    elif filtered_args["example"] == "atacom":
         from examples.rl.agent_loader import build_agent
     del filtered_args["example"]
 
@@ -121,4 +127,9 @@ if __name__ == "__main__":
     config["env_list"] = convert_envs(config["env"])
     del config["env"]
 
-    evaluate(build_agent, **config)
+    if "tournament" in config["env_list"]:
+        run_tournament(build_agent, **config)
+    elif "tournament_server" in config["env_list"]:
+        run_tournament_server(build_agent, **config)
+    else:
+        evaluate(build_agent, **config)

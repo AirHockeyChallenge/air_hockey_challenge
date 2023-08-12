@@ -77,7 +77,7 @@ def experiment(env: str = '7dof-hit',
 
     core = ChallengeCore(agent, mdp, action_idx=[0, 1])
 
-    best_J = -np.inf
+    best_success = -np.inf
 
     for epoch in range(n_epochs):
         core.learn(n_steps=n_steps, n_steps_per_fit=n_steps_per_fit, quiet=quiet)
@@ -109,8 +109,8 @@ def experiment(env: str = '7dof-hit',
                 "E": E, "V": V, "alpha": alpha,
             }
         }, step=epoch)
-        if best_J <= J:
-            best_J = J
+        if best_success <= success:
+            best_success = success
             logger.log_agent(agent)
 
     agent = Agent.load(os.path.join(logger.path, f"agent-{seed}.msh"))

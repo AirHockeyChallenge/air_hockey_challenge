@@ -1,6 +1,7 @@
 import numpy as np
-
-b_params = np.array([8.40683102e-01, 1.42380669e-01, 7.71445220e-04])
+from scipy.spatial.transform import Rotation
+# b_params = np.array([8.40683102e-01, 1.42380669e-01, 7.71445220e-04])
+b_params = np.array([8.40683102e-01, 0, 7.71445220e-04])
 n_params = np.array([0., -0.79, 0.])
 theta_params = np.array([-6.48073315, 6.32545305, 0.8386719])
 damping = np.array([0.2125, 0.2562])
@@ -117,7 +118,7 @@ class AirHockeyTable:
             outside_boundary = True
 
         if not score and not outside_boundary:
-            F, Q_collision = self._check_collision_impl(state, u)
+            F, Q_collision, collision = self._check_collision_impl(state, u)
 
         else:
             F = np.eye(4)
@@ -136,8 +137,10 @@ class AirHockeyTable:
         s = self._cross_2d(v, w) / (denominator + 1e-6)
         r = self._cross_2d(u, w) / (denominator + 1e-6)
         collide_idx = np.where(np.logical_and(np.logical_and(1e-6 < s, s < 1 - 1e-6), np.logical_and(1e-6 < r, r < 1 - 1e-6)))[0]
+        collision = False
 
         if len(collide_idx) > 0:
+            collision = True
             collide_rim_idx = collide_idx[0]
             s_i = s[collide_rim_idx]
             self._F_precollision[0][2] = self._F_precollision[1][3] = self._F_precollision[4][5] = s_i * self.dt
@@ -153,7 +156,7 @@ class AirHockeyTable:
             F_collision = self.local_rim_transform_inv[collide_rim_idx] @ jac_local_collision @ self.local_rim_transform[collide_rim_idx]
             F = self._F_postcollision @ F_collision @ self._F_precollision
             Q_collision = self.local_rim_transform_inv[collide_rim_idx] @ self.col_cov @ self.local_rim_transform_inv[collide_rim_idx].T
-        return F, Q_collision
+        return F, Q_collision, collision
 
 
 class PuckTracker:
@@ -218,32 +221,27 @@ class PuckTracker:
 
 
 def puck_tracker_exp():
-    from air_hockey_challenge.framework.air_hockey_challenge_wrapper import AirHockeyChallengeWrapper
+    from air_hockey_challenge.environments.planar import AirHockeyHit
     import matplotlib
     matplotlib.use('tkagg')
     import matplotlib.pyplot as plt
     from matplotlib.gridspec import GridSpec
 
     def set_puck_state(env, state, P, predict_time):
-        env.base_env._data.qvel[-3:] = np.zeros(3)
-        env.base_env._data.joint("puck_record_x").qpos = state[0] - 1.51
-        env.base_env._data.joint("puck_record_y").qpos = state[1]
-        env.base_env._data.joint("puck_record_yaw").qpos = state[4]
-        env.base_env._data.joint("puck_record_x").qvel = 0.
-        env.base_env._data.joint("puck_record_y").qvel = 0.
-        env.base_env._data.joint("puck_record_yaw").qvel = 0.
+        env._data.site("puck_vis").xpos = np.array([state[0] - 1.51, state[1], 0.0])
+        env._data.site("puck_vis").xmat = Rotation.from_euler('xyz', [0, 0, state[4]]).as_matrix().flatten()
+        env._data.site("puck_vis_rot").xpos = env._data.site("puck_vis").xpos + \
+                                              env._data.site("puck_vis").xmat.reshape([3, 3])[:, 0] * 0.03
 
         eig_v, eig_vector = np.linalg.eig(P[:2, :2])
         if np.linalg.det(P[[0, 1]][:, [0, 1]]) > 1e-4:
-            env.base_env._model.geom('puck_record').size[:2] = eig_v / np.max(eig_v) * 10 * 0.03165
-            env.base_env._model.geom('puck_record').rgba = np.array([0., 0.2, 1., 0.6])
-            env.base_env._model.geom('puck_record_ori').rgba = np.array([1., 0., 0., 1.])
+            env._model.site('puck_vis').size[:2] = eig_v / np.max(eig_v) * 10 * 0.03165
+            env._model.site('puck_vis').rgba = np.array([0., 0.2, 1., 0.6])
         else:
-            env.base_env._model.geom('puck_record').size[:2] = eig_v / 5e-4 * 0.03165
-        env.base_env._data.joint('puck_record_yaw_vis').qpos = np.arctan2(eig_vector[1, 0], eig_vector[0, 0])
+            env._model.site('puck_vis').size[:2] = eig_v / 5e-4 * 0.03165
 
-    env = AirHockeyChallengeWrapper(env="3dof-hit", action_type="position-velocity", random_init=True,
-                                    interpolation_order=3)
+    # env = AirHockeyChallengeWrapper(env="3dof-hit")
+    env = AirHockeyHit()
 
     kalman_filter = PuckTracker(env.env_info, agent_id=1)
     predict_time = 0.5
@@ -251,30 +249,30 @@ def puck_tracker_exp():
     for epoch in range(10):
         # init_pos = np.random.uniform(kalman_filter.system.table.boundary[0, 1], kalman_filter.system.table.boundary[2, 1])
         # init_vel = np.random.randn(3)
-        init_pos = np.array([1.51, -0.3])
-        init_vel = np.array([2.5, 0, 0.])
-        state = np.concatenate([init_pos, init_vel[:2], [np.random.uniform(-np.pi, np.pi)], init_vel[2:]])
+        init_pos = np.array([1.51, -0.125])
+        init_vel = np.array([-2, 0., 0.])
+        state = np.concatenate([init_pos, init_vel[:2], [0.5], init_vel[2:]])
         traj = []
 
         env.reset()
-        env.base_env._data.joint("puck_x").qpos = state[0] - 1.51
-        env.base_env._data.joint("puck_y").qpos = state[1]
-        env.base_env._data.joint("puck_yaw").qpos = state[4]
-        env.base_env._data.joint("puck_x").qvel = state[2]
-        env.base_env._data.joint("puck_y").qvel = state[3]
-        env.base_env._data.joint("puck_yaw").qvel = state[5]
-        env.base_env._data.joint("planar_robot_1/joint_1").qpos = np.pi / 2
-        env.base_env._data.joint("planar_robot_1/joint_2").qpos = 0
-        env.base_env._data.joint("planar_robot_1/joint_3").qpos = 0
+        env._data.joint("puck_x").qpos = state[0] - 1.51
+        env._data.joint("puck_y").qpos = state[1]
+        env._data.joint("puck_yaw").qpos = state[4]
+        env._data.joint("puck_x").qvel = state[2]
+        env._data.joint("puck_y").qvel = state[3]
+        env._data.joint("puck_yaw").qvel = state[5]
+        env._data.joint("planar_robot_1/joint_1").qpos = np.pi / 2
+        env._data.joint("planar_robot_1/joint_2").qpos = 0
+        env._data.joint("planar_robot_1/joint_3").qpos = 0
 
         kalman_filter.reset(state[[0, 1, 4]])
 
         for i in range(200):
-            obs, _, _, _ = env.step(np.vstack([np.array([np.pi / 2, 0., 0.]), np.zeros(3)]))
+            obs, _, _, _ = env.step(np.zeros(3))
             kalman_filter.step(obs[:3])
             state, P, _ = kalman_filter.get_prediction(predict_time)
 
-            set_puck_state(env, state, P, predict_time)
+            # set_puck_state(env, state, P, predict_time)
             env.render()
             traj.append(np.concatenate([state.copy(), obs[:6]]))
         traj = np.array(traj)

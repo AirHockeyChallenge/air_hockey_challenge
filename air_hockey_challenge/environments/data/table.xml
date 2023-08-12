@@ -33,15 +33,30 @@
                       solref="0.0125 0.5" solimp="0.9 0.999 0.001 0.5 2"/>
             </body>
             <body name="rim">
-                <geom name="rim_home_l" class="rim" size="0.045 0.197 0.005" pos="-1.019 0.322 0.005"/>
-                <geom name="rim_home_r" class="rim" size="0.045 0.197 0.005" pos="-1.019 -0.322 0.005"/>
+<!--                <geom name="rim_home_l" class="rim" size="0.045 0.197 0.005" pos="-1.019 0.322 0.005"/>-->
+<!--                <geom name="rim_home_r" class="rim" size="0.045 0.197 0.005" pos="-1.019 -0.322 0.005"/>-->
+
+                <geom name="rim_home_l" class="rim" size="0.045 0.1945 0.005" pos="-1.019 0.3245 0.005"/>
+                <geom name="rim_home_r" class="rim" size="0.045 0.1945 0.005" pos="-1.019 -0.3245 0.005"/>
+                <geom name="rim_home_bound_l" class="rim" type="cylinder" size="0.005 0.005" pos="-0.979 0.13 0.005"/>
+                <geom name="rim_home_bound_l_tail" class="rim" size="0.0425 0.005 0.005" pos="-1.0215 0.13 0.005"/>
+                <geom name="rim_home_bound_r" class="rim" type="cylinder" size="0.005 0.005" pos="-0.979 -0.13 0.005"/>
+                <geom name="rim_home_bound_r_tail" class="rim" size="0.0425 0.005 0.005" pos="-1.0215 -0.13 0.005"/>
+
                 <geom name="rim_home_top" class="rim" size="0.045 0.519 0.01" pos="-1.019 0 0.02"/>
 
                 <geom name="rim_left" class="rim" size="1.064 0.045 0.015" pos="0 0.564 0.015"/>
                 <geom name="rim_right" class="rim" size="1.064 0.045 0.015" pos="0 -0.564 0.015"/>
 
-                <geom name="rim_away_l" class="rim" size="0.045 0.197 0.005" pos="1.019 0.322 0.005"/>
-                <geom name="rim_away_r" class="rim" size="0.045 0.197 0.005" pos="1.019 -0.322 0.005"/>
+<!--                <geom name="rim_away_l" class="rim" size="0.045 0.197 0.005" pos="1.019 0.322 0.005"/>-->
+<!--                <geom name="rim_away_r" class="rim" size="0.045 0.197 0.005" pos="1.019 -0.322 0.005"/>-->
+
+                <geom name="rim_away_l" class="rim" size="0.045 0.1945 0.005" pos="1.019 0.3245 0.005"/>
+                <geom name="rim_away_r" class="rim" size="0.045 0.1945 0.005" pos="1.019 -0.3245 0.005"/>
+                <geom name="rim_away_bound_l" class="rim" type="cylinder" size="0.005 0.005" pos="0.979 0.13 0.005"/>
+                <geom name="rim_away_bound_l_tail" class="rim" size="0.0425 0.005 0.005" pos="1.0215 0.13 0.005"/>
+                <geom name="rim_away_bound_r" class="rim" type="cylinder" size="0.005 0.005" pos="0.979 -0.13 0.005"/>
+                <geom name="rim_away_bound_r_tail" class="rim" size="0.0425 0.005 0.005" pos="1.0215 -0.13 0.005"/>
                 <geom name="rim_away_top" class="rim" size="0.045 0.519 0.01" pos="1.019 0 0.02"/>
             </body>
         </body>
@@ -58,6 +73,9 @@
                 <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
             </body>
         </body>
+
+        <site name="puck_vis" type="ellipsoid" size="0.03165 0.03165 0.004" pos="0 0 -0.05"/>
+        <site name="puck_vis_rot" type="cylinder" size="0.0045 0.006" rgba="1 0 0 1" pos="0 0 -0.05"/>
     </worldbody>
 
     <contact>
@@ -67,26 +85,5 @@
     <worldbody>
         <light pos="0 0 3" dir="0 0 -1" directional="true"/>
         <geom pos="0 0 -0.1" name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
-    </worldbody>
-
-    <worldbody>
-        <body name="puck_record" pos="0 0 0">
-            <joint name="puck_record_x" type="slide" axis="1 0 0" damping="0.005" limited="false"/>
-            <joint name="puck_record_y" type="slide" axis="0 1 0" damping="0.005" limited="false"/>
-            <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
-            <body>
-                <joint name="puck_record_yaw_vis" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
-                <geom pos="0 0 0" name="puck_record" type="ellipsoid" size="0.03165 0.03165 0.004"
-                      material="transparent"
-                      condim="4" friction="0.1 0 0" contype="0" conaffinity="0"/>
-            </body>
-            <body>
-                <joint name="puck_record_yaw" type="hinge" axis="0 0 1" damping="2e-6" limited="false"/>
-                <geom pos="0.016 0 0" zaxis="1 0 0" name="puck_record_ori" type="cylinder" material="transparent"
-                      size="0.0045 0.016 "
-                      condim="4" friction="0.1 0 0" contype="0" conaffinity="0"/>
-                <inertial pos="0 0 0" mass="0.01" diaginertia="2.5e-6 2.5e-6 5e-6"/>
-            </body>
-        </body>
     </worldbody>
 </mujoco>

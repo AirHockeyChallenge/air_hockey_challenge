@@ -24,6 +24,8 @@ class AirHockeyChallengeWrapper(Environment):
         """
 
         env_dict = {
+            "tournament": position.IiwaPositionTournament,
+
             "7dof-hit": position.IiwaPositionHit,
             "7dof-defend": position.IiwaPositionDefend,
             "7dof-prepare": position.IiwaPositionPrepare,
@@ -31,6 +33,9 @@ class AirHockeyChallengeWrapper(Environment):
             "3dof-hit": position.PlanarPositionHit,
             "3dof-defend": position.PlanarPositionDefend
         }
+
+        if env == "tournament" and type(interpolation_order) != tuple:
+            interpolation_order = (interpolation_order, interpolation_order)
 
         self.base_env = env_dict[env](interpolation_order=interpolation_order, **kwargs)
         self.env_name = env
@@ -69,6 +74,7 @@ class AirHockeyChallengeWrapper(Environment):
                         'n_joints']])
 
             info["score"] = self.base_env.score
+            info["faults"] = self.base_env.faults
 
         else:
             info["constraints_value"] = deepcopy(self.env_info['constraints'].fun(obs[self.env_info['joint_pos_ids']],

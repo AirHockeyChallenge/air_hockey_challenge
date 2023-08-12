@@ -307,6 +307,9 @@ class IiwaPositionDouble(PositionControlIIWA, iiwas.AirHockeyDouble):
     pass
 
 
+class IiwaPositionTournament(PositionControlIIWA, iiwas.AirHockeyTournament):
+    pass
+
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt

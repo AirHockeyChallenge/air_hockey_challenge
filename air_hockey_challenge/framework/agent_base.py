@@ -204,23 +204,3 @@ class AgentBase(Agent):
 
         """
         return forward_kinematics(self.robot_model, self.robot_data, self.get_joint_pos(obs))
-
-
-class DoubleAgentsWrapper(Agent):
-    def __init__(self, env_info, agent_1, agent_2):
-        super().__init__(env_info['rl_info'], None)
-        self.agent_1 = agent_1
-        self.agent_2 = agent_2
-        self.observation_shape = env_info['rl_info'].observation_space.shape
-
-    def draw_action(self, observation):
-        observation_1 = observation[:self.observation_shape[0]]
-        observation_2 = observation[self.observation_shape[0]:]
-
-        action_1 = self.agent_1.draw_action(observation_1)
-        action_2 = self.agent_2.draw_action(observation_2)
-        return [action_1, action_2]
-
-    def episode_start(self):
-        self.agent_1.episode_start()
-        self.agent_2.episode_start()

@@ -38,7 +38,7 @@ class BaselineAgent(AgentBase):
         self.agent_params = {'switch_tactics_min_steps': 15,
                              'max_prediction_time': 1.0,
                              'max_plan_steps': 5,
-                             'static_vel_threshold': 0.15,
+                             'static_vel_threshold': 0.4,
                              'transversal_vel_threshold': 0.1,
                              'joint_anchor_pos': joint_anchor_pos,
                              'default_linear_vel': 0.6,
@@ -76,7 +76,7 @@ class BaselineAgent(AgentBase):
             if len(self.state.trajectory_buffer) > 0:
                 break
             else:
-                print("iterate")
+                # print("iterate")
                 pass
 
         self.state.q_cmd, self.state.dq_cmd = self.state.trajectory_buffer[0]
@@ -88,16 +88,19 @@ class BaselineAgent(AgentBase):
 
 def main():
     import time
+    import numpy as np
+
     from air_hockey_challenge.framework.air_hockey_challenge_wrapper import AirHockeyChallengeWrapper
+    # from air_hockey_challenge.framework.agent_base import DoubleAgentsWrapper
     np.random.seed(0)
 
-    env = AirHockeyChallengeWrapper(env="3dof-hit-opponent", action_type="position-velocity",
-                                    interpolation_order=3, debug=False)
+    env = AirHockeyChallengeWrapper(env="7dof-hit", interpolation_order=3, debug=True)
 
-    agents = BaselineAgent(env.env_info, agent_id=1, only_tactic="hit")
-    # agent2 = BaselineAgent(env.env_info, agent_id=1)
+    agent1 = BaselineAgent(env.env_info, agent_id=1)
+    # agent2 = BaselineAgent(env.env_info, agent_id=2)
 
     # agents = DoubleAgentsWrapper(env.env_info, agent1, agent2)
+    agents = agent1
 
     obs = env.reset()
     agents.episode_start()

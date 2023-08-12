@@ -8,7 +8,7 @@ class UniversalJointPlugin:
         self.env_info = env_info
         self.env_model = env_model
         self.env_data = env_data
-        self.Kp = 10
+        self.Kp = 20
         self.Kd = 0.31
 
         self.universal_joint_ids = []
@@ -109,8 +109,11 @@ class UniversalJointPlugin:
                 self.u_joint_pos_des[i * 2: i * 2 + 2] = np.array([alpha_y, alpha_x])
             else:
                 self.u_joint_pos_des[i * 2: i * 2 + 2] += np.minimum(np.maximum(
-                    np.array([alpha_y, alpha_x]) - self.u_joint_pos_des[i * 2: i * 2 + 2],
-                    -np.pi * 0.001), np.pi * 0.001)
+                    10 * (np.array([alpha_y, alpha_x]) - self.u_joint_pos_des[i * 2: i * 2 + 2]),
+                    -np.pi * 0.01), np.pi * 0.01)
+
+            self.u_joint_pos_des[i * 2: i * 2 + 2] = np.array([alpha_y, alpha_x])
+            
         return self.u_joint_pos_des
 
     def _cross_3d(self, a, b):

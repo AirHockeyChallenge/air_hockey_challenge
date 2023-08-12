@@ -41,8 +41,6 @@ class Tactic:
 
     def _set_tactic(self, tactic):
         if tactic != self.state.tactic_current:
-            print("Agent: ", self.state.agent_id, "Switch tactic from: ", self.state.tactic_current.name, " to: ",
-                  tactic.name)
             self.state.is_new_tactic = True
             self.state.switch_tactics_count = 0
             self.state.tactic_current = tactic

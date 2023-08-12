@@ -1,0 +1,33 @@
+version: "3.4"
+
+services:
+  env:
+    image: airhockeychallenge/challenge:latest
+    build:
+      context: .
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XAUTHORITY=/tmp/.docker.xauth
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp/.docker.xauth:/tmp/.docker.xauth
+    command: "python air_hockey_challenge/framework/evaluate_tournament.py"
+    network_mode: host
+    working_dir: /src/2023-challenge
+
+  agent_1:
+    image: airhockeychallenge/agent_1
+    build:
+      context: .
+    command: "python run.py -e tournament_server --example baseline --host localhost --port 8001"
+    network_mode: host
+    working_dir: /src/2023-challenge
+
+  agent_2:
+    image: airhockeychallenge/agent_2
+    build:
+      context: .
+    command: "python run.py -e tournament_server --example baseline --host localhost --port 8002"
+    network_mode: host
+    working_dir: /src/2023-challenge
+
