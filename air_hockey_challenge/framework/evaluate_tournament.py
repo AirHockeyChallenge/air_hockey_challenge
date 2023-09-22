@@ -350,7 +350,7 @@ def get_violations(n_steps, episode_size, constraints_dict, computation_time):
 
     for i in range(0, n_steps, episode_size):
         for name in constraints_dict.keys():
-            if np.any(np.array(constraints_dict[name][i * episode_size: (i + 1) * episode_size]) > 0):
+            if np.any(np.array(constraints_dict[name][i: i + episode_size]) > 0):
                 penalty_sum += PENALTY_POINTS[name]
                 violations["Episode " + str(i / episode_size)].append(name + " violated")
 
