@@ -8,7 +8,7 @@ class AirHockeyDefend(AirHockeySingle):
         Class for the air hockey defending task.
         The agent should stop the puck at the line x=-0.6.
     """
-    def __init__(self, gamma=0.99, horizon=500, viewer_params={}):
+    def __init__(self, gamma=0.99, horizon=500, viewer_params={}, **kwargs):
         self.init_velocity_range = (1, 3)
 
         self.start_range = np.array([[0.29, 0.65], [-0.4, 0.4]])  # Table Frame

@@ -11,9 +11,9 @@ class AirHockeyDouble(AirHockeyBase):
     Base class for two agents air hockey tasks.
     """
 
-    def __init__(self, gamma=0.99, horizon=500, viewer_params={}):
+    def __init__(self, gamma=0.99, horizon=500, viewer_params={}, **kwargs):
 
-        super().__init__(gamma=gamma, horizon=horizon, n_agents=2, viewer_params=viewer_params)
+        super().__init__(gamma=gamma, horizon=horizon, n_agents=2, viewer_params=viewer_params, **kwargs)
 
         self._compute_init_state()
 

@@ -7,7 +7,7 @@ class AirHockeyHit(AirHockeyDouble):
     """
         Class for the air hockey hitting task.
     """
-    def __init__(self, opponent_agent=None, gamma=0.99, horizon=500, moving_init=True, viewer_params={}):
+    def __init__(self, opponent_agent=None, gamma=0.99, horizon=500, moving_init=True, viewer_params={}, **kwargs):
         """
             Constructor
             Args:

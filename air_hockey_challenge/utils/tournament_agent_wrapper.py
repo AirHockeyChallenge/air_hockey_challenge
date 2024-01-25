@@ -136,16 +136,13 @@ class RemoteTournamentAgentWrapper(TournamentAgentWrapper):
 
         client = docker.from_env()
 
-        try:
-            with open(os.path.join(self.log_dir, f"out_{self.name_1}.log"), 'ab') as f:
-                for line in client.api.logs(self.container_id_1, stream=True, follow=False):
-                    f.write(line)
+        with open(os.path.join(self.log_dir, f"out_{self.name_1}.log"), 'ab') as f:
+            for line in client.api.logs(self.container_id_1, stream=True, follow=False):
+                f.write(line)
 
-            with open(os.path.join(self.log_dir, f"out_{self.name_2}.log"), 'ab') as f:
-                for line in client.api.logs(self.container_id_2, stream=True, follow=False):
-                    f.write(line)
-        except Exception as e:
-            print(e)
+        with open(os.path.join(self.log_dir, f"out_{self.name_2}.log"), 'ab') as f:
+            for line in client.api.logs(self.container_id_2, stream=True, follow=False):
+                f.write(line)
 
         client.api.stop(self.container_id_1)
         client.api.stop(self.container_id_2)

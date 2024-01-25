@@ -8,7 +8,7 @@ class AirHockeyPrepare(AirHockeySingle):
         Class for the air hockey prepare task. The agent should try to
         improve the puck position.
     """
-    def __init__(self, gamma=0.99, horizon=500, viewer_params={}):
+    def __init__(self, gamma=0.99, horizon=500, viewer_params={}, **kwargs):
         super().__init__(gamma=gamma, horizon=horizon, viewer_params=viewer_params)
 
         width_high = self.env_info['table']['width'] / 2 - self.env_info['puck']['radius'] - 0.002

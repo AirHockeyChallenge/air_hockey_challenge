@@ -1,5 +1,5 @@
 <mujoco model="planar_robot_1">
-    <compiler autolimits="true" angle="radian"/>
+    <compiler autolimits="true" angle="radian" meshdir="assets"/>
     <asset>
         <material name="dark_red" rgba="0.58 0.03 0.25 1"/>
         <material name="black" rgba="0.1 0.1 0.11 1"/>

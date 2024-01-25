@@ -6,7 +6,6 @@ import tarfile, io, yaml
 from collections import defaultdict
 from threading import Thread
 from statistics import mode
-from pathlib import Path
 
 import numpy as np
 import torch
@@ -100,9 +99,6 @@ def run_remote_tournament(name_1, name_2, log_dir, steps_per_game=45000, n_episo
         render (bool, False): set to True to spawn a viewer that renders the simulation
         save_away_data(bool, False): Set True to save the data and generate a score for the second agent.
     """
-
-    Path(log_dir).mkdir(parents=True, exist_ok=True)
-
     import docker
     BASE_NAME_IMG = "swr.eu-west-101.myhuaweicloud.eu/his_air_hockey_competition_eu/solution-"
 
