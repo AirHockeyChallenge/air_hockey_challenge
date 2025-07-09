@@ -1,12 +1,12 @@
 # Air Hockey Challenge 2022 
 
-[ [Website] ](https://air-hockey-challenge.robot-learning.net/) [ [Documentation] ](https://air-hockey-challenges-docs.readthedocs.io/en/latest/)  [ [Discussion] ](https://github.com/AirHockeyChallenge/air_hockey_challenge/discussions)
+[ [Website] ](https://sites.google.com/view/rahc-2023) [ [Documentation] ](https://air-hockey-challenges-docs.readthedocs.io/en/2023/)  [ [Discussion] ](https://github.com/AirHockeyChallenge/air_hockey_challenge/discussions)
 
 This is the source code for the Air Hockey Challenge.
 
 The current released version is **Warm Up**.
 
-Please see the [documentation](https://air-hockey-challenges-docs.readthedocs.io/en/latest/) for Installation and usage.
+Please see the [documentation](https://air-hockey-challenges-docs.readthedocs.io/en/2023/) for Installation and usage.
 
 ## Support
 
